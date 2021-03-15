@@ -25,7 +25,7 @@ WORKDIR "${ELASTALERT_HOME}"
 RUN python3 setup.py install
 
 FROM node:14-alpine
-LABEL maintainer="BitSensor <dev@bitsensor.io>"
+LABEL maintainer="Karql <karql.pl@gmail.com>"
 # Set timezone for this container
 ENV TZ Etc/UTC
 

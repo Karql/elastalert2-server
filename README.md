@@ -1,17 +1,33 @@
+# Fork of [bitsensor/elastalert](https://github.com/bitsensor/elastalert)
+
+Official repository is not maintained anymore.
+Aim of this fork is to support the latest version of [ElastAlert](https://github.com/Yelp/elastalert)
+
+Check docker hub for current images: https://hub.docker.com/r/karql/elastalert
+
+## Changelog
+
+### 4.0.0 (2021-03-09)
+* Update python to version 3 (from version 0.2.0 of elastalert python2 is not supported) 
+* Update build image to alpine:3.13
+* Update main image to node:14-alpine
+* Update elastalert to latest version (as of 2021-03-15) rev: 1dc4f30f30d39a689f419ce19c7e2e4d67a50be3
+
 # ElastAlert Server
 
-> A server that runs [ElastAlert](https://github.com/Yelp/elastalert) and exposes REST API's for manipulating rules and alerts. It works great in combination with our [ElastAlert Kibana plugin](https://github.com/bitsensor/elastalert-kibana-plugin).
+A server that runs [ElastAlert](https://github.com/Yelp/elastalert) and exposes REST API's for manipulating rules and alerts.
+It works great in combination with fork [ElastAlert Kibana plugin](https://github.com/nsano-rururu/elastalert-kibana-plugin).
 
-![GitHub release](https://img.shields.io/github/release/bitsensor/elastalert.svg)
-![Docker Pulls](https://img.shields.io/docker/pulls/bitsensor/elastalert.svg)
-![GitHub stars](https://img.shields.io/github/stars/bitsensor/elastalert.svg?style=social&label=Stars)
+![GitHub release](https://img.shields.io/github/release/karql/elastalert.svg)
+![Docker pulls](https://img.shields.io/docker/pulls/karql/elastalert.svg)
+![GitHub stars](https://img.shields.io/github/stars/karql/elastalert.svg?style=social&label=Stars)
 
 ---
 
 ## Installation
 The most convenient way to run the ElastAlert server is by using our Docker container image. The default configuration uses `localhost:9200` as ElasticSearch host, if this is not the case in your setup please edit `es_host` and `es_port` in both the `elastalert.yaml` and `config.json` configuration files.
 
-To run the Docker image you will want to mount the volumes for configuration and rule files to keep them after container updates. In order to do that conveniently, please do: `git clone https://github.com/bitsensor/elastalert.git; cd elastalert`
+To run the Docker image you will want to mount the volumes for configuration and rule files to keep them after container updates. In order to do that conveniently, please do: `git clone https://github.com/karql/elastalert.git; cd elastalert`
 
 ```bash
 docker run -d -p 3030:3030 -p 3333:3333 \
@@ -21,31 +37,26 @@ docker run -d -p 3030:3030 -p 3333:3333 \
     -v `pwd`/rules:/opt/elastalert/rules \
     -v `pwd`/rule_templates:/opt/elastalert/rule_templates \
     --net="host" \
-    --name elastalert bitsensor/elastalert:latest
+    --name elastalert karql/elastalert:latest
 ```
 
 ## Building Docker image
 
 Clone the repository
 ```bash
-git clone https://github.com/bitsensor/elastalert.git && cd elastalert
+git clone https://github.com/karql/elastalert.git && cd elastalert
 ```
 
 Build the image
 ```
-make build
-```
-which is equivalent of
-```
-docker pull alpine:latest && docker pull node:latest
 docker build -t elastalert .
 ```
 
 ### Options
 
-Using a custom ElastAlert version (a [release from github](https://github.com/Yelp/elastalert/releases)) e.g. `master` or `v0.1.28`
+Using a custom ElastAlert version (a [release from github](https://github.com/Yelp/elastalert/releases)) e.g. `master` or `v0.24.0` or `1dc4f30f30d39a689f419ce19c7e2e4d67a50be3` (commit sha)
 ```bash
-make build v=v0.1.28
+docker build --build-arg ELASTALERT_VERSION=1dc4f30f30d39a689f419ce19c7e2e4d67a50be3 -t elastalert .
 ```
 Using a custom mirror
 ```bash

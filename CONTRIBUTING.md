@@ -1,3 +1,5 @@
+# OUTDATED!!!
+
 # Contributing to ElastAlert Server
 **Do you want to contribute to our ElastAlert Server or issue an issue? Great! Since we hate rejecting pull requests or ask you to describe your issue more clearly, please read these guidelines carefully:**
 

@@ -1,6 +1,6 @@
 {
   "name": "@bitsensor/elastalert",
-  "version": "3.0.0-beta.0",
+  "version": "4.0.0",
   "description": "A server that runs ElastAlert and exposes REST API's for manipulating rules and alerts.",
   "license": "MIT",
   "main": "index.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bitsensor/elastalert.git"
+    "url": "git+https://github.com/karql/elastalert.git"
   },
   "directories": {
     "lib": "./lib",
