@@ -1,22 +1,20 @@
 # Fork of [bitsensor/elastalert](https://github.com/bitsensor/elastalert)
 
 Official repository is not maintained anymore.
+
 Aim of this fork is to support the latest version of [ElastAlert](https://github.com/Yelp/elastalert)
 
-Check docker hub for current images: https://hub.docker.com/r/karql/elastalert
+Check [Docker Hub](https://hub.docker.com/r/karql/elastalert) for current images.
 
-## Changelog
+Chcek [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plugin) repo to get plugin wokring with latest Kibana.
 
-### 4.0.0 (2021-03-09)
-* Update python to version 3 (from version 0.2.0 of elastalert python2 is not supported) 
-* Update build image to alpine:3.13
-* Update main image to node:14-alpine
-* Update elastalert to latest version (as of 2021-03-15) rev: 1dc4f30f30d39a689f419ce19c7e2e4d67a50be3
+---
 
 # ElastAlert Server
 
 A server that runs [ElastAlert](https://github.com/Yelp/elastalert) and exposes REST API's for manipulating rules and alerts.
-It works great in combination with fork [ElastAlert Kibana plugin](https://github.com/nsano-rururu/elastalert-kibana-plugin).
+
+It works great in combination with fork [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plugin).
 
 ![GitHub release](https://img.shields.io/github/release/karql/elastalert.svg)
 ![Docker pulls](https://img.shields.io/docker/pulls/karql/elastalert.svg)
