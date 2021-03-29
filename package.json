@@ -18,37 +18,37 @@
     "test": "./test"
   },
   "dependencies": {
-    "babel-cli": "^6.11.4",
-    "babel-preset-es2015": "^6.13.2",
-    "babel-register": "^6.14.0",
     "body-parser": "^1.15.2",
-    "bunyan": "^1.8.1",
-    "cors": "^2.8.4",
-    "elasticsearch": "^15.1.1",
-    "express": "^4.14.0",
-    "fs-extra": "^5.0.0",
-    "joi": "^13.1.2",
-    "lodash": "^4.15.0",
-    "mkdirp": "^0.5.1",
-    "object-resolve-path": "^1.1.1",
+    "bunyan": "^1.8.15",
+    "cors": "^2.8.5",
+    "elasticsearch": "^16.7.2",
+    "express": "^4.17.1",
+    "joi": "^17.4.0",
+    "lodash": "^4.17.21",
+    "mkdirp": "^1.0.4",
     "randomstring": "^1.1.5",
     "raven": "^2.6.1",
-    "request": "^2.85.0",
-    "request-promise-native": "^1.0.5",
-    "tar": "^4.4.1",
-    "ws": "^6.0.0"
+    "ws": "^7.4.4"
   },
   "devDependencies": {
+    "@types/bunyan": "^1.8.6",
+    "@types/cors": "^2.8.10",
+    "@types/elasticsearch": "^5.0.37",
+    "@types/express": "^4.17.11",
+    "@types/lodash": "^4.14.168",
+    "@types/mkdirp": "^1.0.1",
+    "@types/node": "^14.14.35",
+    "@types/randomstring": "^1.1.6",
+    "@types/ws": "^7.4.0",
     "eslint": "^4.17.0",
     "husky": "^0.14.3",
-    "istanbul": "^0.4.4",
-    "mocha": "~3.0.2"
+    "nodemon": "^2.0.7",
+    "typescript": "^4.2.3"
   },
   "scripts": {
-    "build": "babel src -d lib",
-    "start": "sh ./scripts/start.sh",
-    "test": "./scripts/test.sh",
-    "update-authors": "./scripts/update-authors.sh",
-    "precommit": "./node_modules/eslint/bin/eslint.js ."
+    "serve": "nodemon --inspect --watch dist/ -d 1 ./dist/index.js",
+    "tsc:watch": "tsc -w",
+    "tsc:build": "tsc",
+    "start": "sh ./scripts/start.sh"
   }
 }

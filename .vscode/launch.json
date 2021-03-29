@@ -1,17 +1,32 @@
 {
-    // Use IntelliSense to learn about possible Node.js debug attributes.
+    // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
             "type": "node",
+            "name": "Debug",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceRoot}/index.js",
-            "env": {
-                "NODE_PATH": "."
-            }
-        }
+            "program": "${workspaceFolder}/src/index.ts",
+            "outFiles": [
+                "${workspaceFolder}/dist/**/*.js",
+            ],
+            //"outputCapture": "std",
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "nodemon",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",            
+            "program": "${workspaceFolder}/dist/index.js",
+            "request": "launch",
+            "restart": true,
+            "runtimeExecutable": "nodemon",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "pwa-node"
+        },        
     ]
 }

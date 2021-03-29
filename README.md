@@ -13,15 +13,15 @@ Check [Docker Hub](https://hub.docker.com/r/karql/elastalert) for current images
 Chcek [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plugin) repo to get plugin wokring with latest Kibana.
 
 
-## Plans & Goals
+## Plans
 
 :heavy_check_mark: Support the latest version of [ElastAlert](https://github.com/Yelp/elastalert) - DONE! Check this release: [4.0.0](https://github.com/Karql/elastalert/releases/tag/4.0.0) for more details.
 
-:white_large_square: Migrate to TypeScript
+![80%](https://progress-bar.dev/80) Migrate to TypeScript
 
-:white_large_square: Add swagger
+![0%](https://progress-bar.dev/0) Add swagger
 
-:white_large_square: Prepare a good getting started guide
+![0%](https://progress-bar.dev/0) Prepare a good getting started guide
 
 ---
 
@@ -252,25 +252,6 @@ This server exposes the following REST API's:
 - **GET `/search/:index`**
 
     Performs elasticsearch query on behalf of the API. JSON body to this endpoint will become body of an ES search. 
-
-- **[WIP] GET `/config`**
-
-    Gets the ElastAlert configuration from `config.yaml` in `elastalertPath` (from the config).
-  
-- **[WIP] POST `/config`**
-
-    Allows you to edit the ElastAlert configuration from `config.yaml` in `elastalertPath` (from the config). The required body to be send will be edited when the work on this API is done.
-
-- **[WIP] POST `/download`**
-  
-    Allows you to download a .tar archive with rules from a given HTTP endpoint. The archive will be downloaded, extracted and removed.
-    Please note, body should contain URL pointing to tar archive, with tar extension.	
-   
-    Usage example:
-	
-    ```bash
-    curl -X POST localhost:3030/download -d "url=https://artifactory.com:443/artifactory/raw/rules/rules.tar"
-    ```
         
 ## Contributing
 Want to contribute to this project? Great! Please read our [contributing guidelines](CONTRIBUTING.md) before submitting an issue or a pull request.
