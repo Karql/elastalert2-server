@@ -1,12 +1,27 @@
 # Fork of [bitsensor/elastalert](https://github.com/bitsensor/elastalert)
 
-Official repository is not maintained anymore.
+Hi there!
 
-Aim of this fork is to support the latest version of [ElastAlert](https://github.com/Yelp/elastalert)
+Official repository is not maintained anymore. Last commit was a long time ago. From that moment some things have changed a bit. New version of [ElastAlert](https://github.com/Yelp/elastalert) was released and depends on python3. Some dependencies also went further.
+
+I use and like this project so I have decided to develop it by my own.
+
+Main goal of this fork is to support the latest version of [ElastAlert](https://github.com/Yelp/elastalert) - DONE! In free time maybe something more ;)
 
 Check [Docker Hub](https://hub.docker.com/r/karql/elastalert) for current images.
 
 Chcek [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plugin) repo to get plugin wokring with latest Kibana.
+
+
+## Plans & Goals
+
+:heavy_check_mark: Support the latest version of [ElastAlert](https://github.com/Yelp/elastalert) - DONE! Check this release: [4.0.0](https://github.com/Karql/elastalert/releases/tag/4.0.0) for more details.
+
+:white_large_square: Migrate to TypeScript
+
+:white_large_square: Add swagger
+
+:white_large_square: Prepare a good getting started guide
 
 ---
 
