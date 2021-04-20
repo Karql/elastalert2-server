@@ -1,11 +1,11 @@
 import { ChildProcessWithoutNullStreams, spawn, spawnSync } from 'child_process';
-import config from '../../common/config';
-import Logger from '../../common/logger';
-import { Status } from '../../common/status.model';
+import config from '../common/config';
+import Logger from '../common/logger';
+import { Status } from '../common/status.model';
 
-let logger = new Logger('ProcessController');
+let logger = new Logger('ProcessService');
 
-export default class ProcessController {
+export default class ProcessService {
   private _onExitCallbacks: {(): void;}[];
   private _status: Status;
   private _process: ChildProcessWithoutNullStreams | null;
@@ -33,8 +33,6 @@ export default class ProcessController {
    * Start ElastAlert if it isn't already running.
    */
   start() {
-    // return; // DEV: uncomment to working without elastalert
-
     // Do not do anything if ElastAlert is already running
     if (this._process !== null) {
       logger.warn('ElastAlert is already running!');

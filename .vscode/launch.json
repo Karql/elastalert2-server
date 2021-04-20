@@ -5,8 +5,8 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "node",
             "name": "Debug",
+            "type": "node",
             "request": "launch",
             "program": "${workspaceFolder}/src/index.ts",
             "outFiles": [
@@ -17,16 +17,27 @@
         },
         {
             "name": "nodemon",
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen",            
-            "program": "${workspaceFolder}/dist/index.js",
+            "type": "pwa-node",
             "request": "launch",
-            "restart": true,
             "runtimeExecutable": "nodemon",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "type": "pwa-node"
-        },        
+        },
+        {
+            "name": "Launch via npm",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run-script",
+                "dev"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",            
+        }
     ]
 }

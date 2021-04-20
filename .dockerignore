@@ -6,5 +6,8 @@
 !scripts/
 !elastalert_modules/
 !rule_templates/
-!config/
+!config/config.json
+!config/elastalert.yaml
+!config/elastalert-test.yaml
 !tsconfig.json
+!tsoa.json

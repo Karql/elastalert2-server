@@ -1,14 +1,9 @@
 {
-  "name": "@bitsensor/elastalert",
-  "version": "4.0.0",
-  "description": "A server that runs ElastAlert and exposes REST API's for manipulating rules and alerts.",
+  "name": "elastalert2-server",
+  "version": "5.0.0-next.0",
+  "description": "A server that runs ElastAlert2 and exposes REST API's for manipulating rules and alerts.",
   "license": "MIT",
   "main": "index.js",
-  "author": {
-    "name": "BitSensor",
-    "url": "https://bitsensor.io",
-    "email": "dev@bitsensor.io"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/karql/elastalert.git"
@@ -28,6 +23,8 @@
     "mkdirp": "^1.0.4",
     "randomstring": "^1.1.5",
     "raven": "^2.6.1",
+    "swagger-ui-express": "^4.1.6",
+    "tsoa": "^3.6.1",
     "ws": "^7.4.4"
   },
   "devDependencies": {
@@ -39,16 +36,21 @@
     "@types/mkdirp": "^1.0.1",
     "@types/node": "^14.14.35",
     "@types/randomstring": "^1.1.6",
+    "@types/swagger-ui-express": "^4.1.2",
     "@types/ws": "^7.4.0",
+    "concurrently": "^6.0.2",
     "eslint": "^4.17.0",
     "husky": "^0.14.3",
     "nodemon": "^2.0.7",
+    "ts-node": "^9.1.1",
     "typescript": "^4.2.3"
   },
   "scripts": {
+    "dev": "concurrently \"nodemon\" \"nodemon --config nodemon-spec.json\"",
+    "build": "tsoa spec-and-routes && tsc",
+    "start": "sh ./scripts/start.sh",
     "serve": "nodemon --inspect --watch dist/ -d 1 ./dist/index.js",
     "tsc:watch": "tsc -w",
-    "tsc:build": "tsc",
-    "start": "sh ./scripts/start.sh"
+    "tsc:build": "tsc"
   }
 }

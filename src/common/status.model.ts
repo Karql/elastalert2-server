@@ -1,4 +1,5 @@
 export enum Status {
+  UNDEFINED = -1,
   SETUP = 0,
   READY = 1,
   ERROR = 2,
