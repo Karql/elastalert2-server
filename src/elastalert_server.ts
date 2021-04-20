@@ -1,17 +1,22 @@
-import express, { Express} from 'express';
+import express, { Express,   Response as ExResponse,
+  Request as ExRequest,
+  NextFunction,} from 'express';
 import bodyParser from 'body-parser';
 import Logger from './common/logger';
 import config from './common/config';
 import path from 'path';
-import FileSystem from './common/file-system/file-system';
+import FileSystemService from './common/file-system/file-system.service';
 import { listen } from './common/websocket';
-import setupRouter from './routes/route_setup';
-import ProcessController from './controllers/process';
-import RulesController from './controllers/rules';
-import TemplatesController from './controllers/templates';
-import TestController from './controllers/test';
+import ProcessService from './services/process.service';
+import RulesService from './services/rules.service';
+import TemplatesService from './services/templates.service';
+import TestService from './services/test.service';
 import cors from 'cors';
 import { Server } from 'http';
+import swaggerUi from "swagger-ui-express";
+
+import { RegisterRoutes } from './routes'
+import RequestError from './common/errors/request_error';
 
 let logger = new Logger('Server');
 
@@ -19,26 +24,26 @@ export default class ElastalertServer {
   private _express: Express;
   private _runningTimeouts: NodeJS.Timeout[];
 
-  private _processController: ProcessController;
-  private _rulesController: RulesController;
-  private _templatesController: TemplatesController;
-  private _testController: TestController;
+  private _processService: ProcessService;
+  private _rulesService: RulesService;
+  private _templatesService: TemplatesService;
+  private _testService: TestService;
 
   private _runningServer: Server | null; 
-  private _fileSystemController: FileSystem;
+  private _fileSystemService: FileSystemService;
 
   constructor() {
     this._express = express();
     
     this._runningTimeouts = [];
 
-    this._processController = new ProcessController();
-    this._rulesController = new RulesController();
-    this._templatesController = new TemplatesController();
-    this._testController = new TestController(this);
+    this._processService = new ProcessService();
+    this._rulesService = new RulesService();
+    this._templatesService = new TemplatesService();
+    this._testService = new TestService(this);
 
     this._runningServer = null;
-    this._fileSystemController = new FileSystem();
+    this._fileSystemService = new FileSystemService();
     
 
     // Set listener on process exit (SIGINT == ^C)
@@ -57,42 +62,78 @@ export default class ElastalertServer {
     return this._express;
   }
 
-  get processController() {
-    return this._processController;
+  get processService() {
+    return this._processService;
   }
 
-  get rulesController() {
-    return this._rulesController;
+  get rulesService() {
+    return this._rulesService;
   }
 
-  get templatesController() {
-    return this._templatesController;
+  get templatesService() {
+    return this._templatesService;
   }
 
-  get testController() {
-    return this._testController;
+  get testService() {
+    return this._testService;
   }
 
-  async start() {
+  async start() { 
     const self = this;
     
     try {
       self._express.use(cors());
       self._express.use(bodyParser.json());
       self._express.use(bodyParser.urlencoded({ extended: true }));
+
+      // TODO
+      self._express.use(express.static("dist"));
+      self._express.use(
+        "/swagger-ui",
+        swaggerUi.serve,
+        swaggerUi.setup(undefined, {
+          swaggerOptions: {
+            url: "/swagger.json",
+          },
+        })
+      );
+      
+
       self._setupRouter();
+
+      self._express.use((err: unknown,
+        req: ExRequest,
+        res: ExResponse,
+        next: NextFunction) => {
+          if (err instanceof RequestError) {
+            let requestError = <RequestError>err;
+            return res.status(requestError.statusCode || 500).json(requestError);
+          }
+
+          // TODO: Not send?
+          if (err instanceof Error) {
+            return res.status(500).json({
+              error: err
+            });
+          }
+
+          next();
+      })
+
+
+
       self._runningServer = self.express.listen(config.get().port, self._serverController);
       self._express.set('server', self);
 
 
-      self._processController.start();
-      self._processController.onExit(function() {
+      self._processService.start();
+      self._processService.onExit(function() {
         // If the elastalert process exits, we should stop the server.
         process.exit(0);
       });
 
       try {
-        await self._fileSystemController.createDirectoryIfNotExists(self.getDataFolder());
+        await self._fileSystemService.createDirectoryIfNotExists(self.getDataFolder());
       }
       catch (ex) {
         logger.error('Error creating data folder with error:', ex);
@@ -116,7 +157,7 @@ export default class ElastalertServer {
               let rule = data.rule;
               let options = data.options;
               // TODO: joi validate options
-              self._testController?.testRule(rule, options, ws);
+              self._testService?.testRule(rule, options, ws);
             }
           } catch (error) {
             console.log(error);
@@ -133,7 +174,7 @@ export default class ElastalertServer {
   }
 
   stop() {
-    this._processController?.stop();
+    this._processService?.stop();
     this._runningServer?.close();
 
     this._runningTimeouts.forEach((timeout) => clearTimeout(timeout));
@@ -150,7 +191,7 @@ export default class ElastalertServer {
   }
 
   _setupRouter() {
-    setupRouter(this._express);
+    RegisterRoutes(this._express);
   }
 
   _serverController() {

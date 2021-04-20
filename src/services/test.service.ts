@@ -1,17 +1,17 @@
-import Logger from '../../common/logger';
-import FileSystem from '../../common/file-system/file-system';
-import config from '../../common/config';
+import Logger from '../common/logger';
+import FileSystemService from '../common/file-system/file-system.service';
+import config from '../common/config';
 import path from 'path';
 import randomstring from 'randomstring';
 import {spawn} from 'child_process';
-import ElastalertServer from '../../elastalert_server';
-import { TestRuleOptions } from './test-rule-options.model';
+import ElastalertServer from '../elastalert_server';
 import WebSocket from 'ws';
+import { TestRuleOptions, TestRuleOptionsDefaults } from '../models/test/test-rule-options.model';
 
-let logger = new Logger('TestController');
-let fileSystem = new FileSystem();
+let logger = new Logger('TestService');
+let fileSystem = new FileSystemService();
 
-export default class TestController {
+export default class TestService {
   private _server: ElastalertServer;
   private _elastalertPath: string;
   private _testFolder: string;
@@ -26,7 +26,9 @@ export default class TestController {
     });
   }
 
-  testRule(rule: string, options: TestRuleOptions, socket?: WebSocket) {
+  testRule(rule: string, options?: TestRuleOptions, socket?: WebSocket) {
+    let o = {...TestRuleOptionsDefaults, ...options}
+
     const self = this;
     let tempFileName = '~' + randomstring.generate() + '.temp';
     let tempFilePath = path.join(self._testFolder, tempFileName);
@@ -38,22 +40,22 @@ export default class TestController {
           let stdoutLines: string[] = [];
           let stderrLines: string[] = [];
 
-          processOptions.push('-m', 'elastalert.test_rule', '--config', 'config-test.yaml', tempFilePath, '--days', options.days.toString());
+          processOptions.push('-m', 'elastalert.test_rule', '--config', 'config-test.yaml', tempFilePath, '--days', o.days.toString());
 
-          if (options.format === 'json') {
+          if (o.format === 'json') {
             processOptions.push('--formatted-output');
           }
 
-          if (options.maxResults > 0) {
+          if (o.maxResults > 0) {
             processOptions.push('--max-query-size');
-            processOptions.push(options.maxResults.toString());
+            processOptions.push(o.maxResults.toString());
           }
 
-          if (options.alert) {
+          if (o.alert) {
             processOptions.push('--alert');
           }
 
-          switch (options.testType) {
+          switch (o.testType) {
             case 'schemaOnly':
               processOptions.push('--schema-only');
               break;
@@ -103,7 +105,7 @@ export default class TestController {
 
             testProcess.on('exit', function (statusCode) {
               if (statusCode === 0) {
-                if (options.format === 'json') {
+                if (o.format === 'json') {
                   resolve(stdoutLines.join(''));
                 }
                 else {

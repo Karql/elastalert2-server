@@ -2,11 +2,20 @@
 
 Hi there!
 
-Official repository is not maintained anymore. Last commit was a long time ago. From that moment some things have changed a bit. New version of [ElastAlert2](https://github.com/jertel/elastalert2) was released and depends on python3. Some dependencies also went further.
+Official repository is not maintained anymore. Last commit was a long time ago. From that moment some things have changed a bit. 
+
+New version of [ElastAlert](https://github.com/Yelp/elastalert) was released and depends on python3. Some dependencies also went further.
 
 I use and like this project so I have decided to develop it by my own.
 
-Main goal of this fork is to support the latest version of [ElastAlert](https://github.com/Yelp/elastalert) - DONE! In free time maybe something more ;)
+Main goal of this fork is to support the latest version of [ElastAlert](https://github.com/Yelp/elastalert) - DONE!
+
+Edit: 2021-09-09
+[ElastAlert](https://github.com/Yelp/elastalert) is also not maintained anymore.
+
+[ElastAlert2](https://github.com/jertel/elastalert2) has been born and now it is usied underhood.
+
+In free time maybe something more ;)
 
 Check [Docker Hub](https://hub.docker.com/r/karql/elastalert) for current images.
 
@@ -17,19 +26,23 @@ Chcek [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plug
 
 :heavy_check_mark: Support the latest version of [ElastAlert](https://github.com/Yelp/elastalert) - DONE! Check this release: [4.0.0](https://github.com/Karql/elastalert/releases/tag/4.0.0) for more details.
 
-![80%](https://progress-bar.dev/80) Migrate to TypeScript
+:heavy_check_mark: Support the latest version of [ElastAlert2](https://github.com/jertel/elastalert2) - DONE! Not released yet.
 
-![0%](https://progress-bar.dev/0) Add swagger
+![90%](https://progress-bar.dev/90) Migrate to TypeScript (left some cleanup & refactor)
+
+![90%](https://progress-bar.dev/90) Add swagger (left some cleanup & refactor)
 
 ![0%](https://progress-bar.dev/0) Prepare a good getting started guide
 
 ---
 
-# ElastAlert Server
+# ElastAlert2 Server
 
 A server that runs [ElastAlert2](https://github.com/jertel/elastalert2) and exposes REST API's for manipulating rules and alerts.
 
 It works great in combination with fork [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plugin).
+
+You can also maintain everything directly  from swagger 😍 just add `/swagger-ui/` to the URL.
 
 ![GitHub release](https://img.shields.io/github/release/karql/elastalert.svg)
 ![Docker pulls](https://img.shields.io/docker/pulls/karql/elastalert.svg)
@@ -156,10 +169,6 @@ This server exposes the following REST API's:
 
     Where `:action` can be either 'start' or 'stop', which will respectively start or stop the current ElastAlert2 process.
   
-- **[WIP] GET `/status/errors`**
-
-    When `/status` returns 'ERROR' this returns a list of errors that were triggered.
-  
 - **GET `/rules`**
 
     Returns a list of directories and rules that exist in the `rulesPath` (from the config) and are being run by the ElastAlert2 process.
@@ -249,7 +258,7 @@ This server exposes the following REST API's:
 
     Returns field mapping from elasticsearch for a given index. 
 
-- **GET `/search/:index`**
+- **POST `/search/:index`**
 
     Performs elasticsearch query on behalf of the API. JSON body to this endpoint will become body of an ES search. 
         

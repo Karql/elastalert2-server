@@ -1,0 +1,10 @@
+{
+    "exec": "npx ts-node src/index.ts",
+    "watch": [
+        "src"
+    ],
+    "ignore": [
+        "src/controllers/**/*.ts"
+    ],
+    "ext": "ts"
+}

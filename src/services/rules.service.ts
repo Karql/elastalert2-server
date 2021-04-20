@@ -1,22 +1,22 @@
 import { join as joinPath, normalize as normalizePath, extname as pathExtension } from 'path';
 import mkdirp from 'mkdirp';
-import FileSystem from '../../common/file-system/file-system';
-import config from '../../common/config';
-import Logger from '../../common/logger';
+import FileSystemService from '../common/file-system/file-system.service';
+import config from '../common/config';
+import Logger from '../common/logger';
 import {
   RuleNotFoundError, RuleNotReadableError, RuleNotWritableError,
   RulesFolderNotFoundError, RulesRootFolderNotCreatableError
-} from '../../common/errors/rule_request_errors';
-import RequestError from '../../common/errors/request_error';
+} from '../common/errors/rule_request_errors';
+import RequestError from '../common/errors/request_error';
 
-let logger = new Logger('RulesController');
+let logger = new Logger('RulesService');
 
-export default class RulesController {
-  private _fileSystemController: FileSystem;
+export default class RulesService {
+  private _fileSystemController: FileSystemService;
   private _rulesFolder: string;
 
   constructor() {
-    this._fileSystemController = new FileSystem();
+    this._fileSystemController = new FileSystemService();
     this._rulesFolder = this._getRulesFolder();
   }
 

@@ -10,6 +10,8 @@
 ## Features
 
 * Update npm packages
+* Add swagger support and completly redesign setup routes etc. (https://github.com/lukeautry/tsoa)
+* Migrate to [ElastAlert2](https://github.com/jertel/elastalert2)
 
 ## Removals
 

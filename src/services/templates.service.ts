@@ -1,20 +1,20 @@
 import {join as joinPath, normalize as normalizePath, extname as pathExtension} from 'path';
 import mkdirp from 'mkdirp';
-import FileSystem from '../../common/file-system/file-system';
-import config from '../../common/config';
-import Logger from '../../common/logger';
+import FileSystemService from '../common/file-system/file-system.service';
+import config from '../common/config';
+import Logger from '../common/logger';
 import {TemplateNotFoundError, TemplateNotReadableError, TemplateNotWritableError,
-  TemplatesFolderNotFoundError, TemplatesRootFolderNotCreatableError} from '../../common/errors/template_request_errors';
-import RequestError from '../../common/errors/request_error';
+  TemplatesFolderNotFoundError, TemplatesRootFolderNotCreatableError} from '../common/errors/template_request_errors';
+import RequestError from '../common/errors/request_error';
 
-let logger = new Logger('TemplatesController');
+let logger = new Logger('TemplatesService');
 
-export default class TemplatesController {
-  private _fileSystemController: FileSystem;
+export default class TemplatesService {
+  private _fileSystemController: FileSystemService;
   private _templatesFolder: string;
 
   constructor() {
-    this._fileSystemController = new FileSystem();
+    this._fileSystemController = new FileSystemService();
     this._templatesFolder = this._getTemplatesFolder();
   }
 

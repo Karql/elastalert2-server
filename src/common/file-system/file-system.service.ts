@@ -3,7 +3,7 @@ import { join as joinPath } from 'path';
 import mkdirp from 'mkdirp';
 import { DirectoryIndex } from './directory-index.model';
 
-export default class FileSystem {
+export default class FileSystemService {
   constructor() { }
 
   readDirectory(path: string): Promise<DirectoryIndex> {
