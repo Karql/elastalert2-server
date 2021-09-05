@@ -2,7 +2,7 @@
 
 Hi there!
 
-Official repository is not maintained anymore. Last commit was a long time ago. From that moment some things have changed a bit. New version of [ElastAlert](https://github.com/Yelp/elastalert) was released and depends on python3. Some dependencies also went further.
+Official repository is not maintained anymore. Last commit was a long time ago. From that moment some things have changed a bit. New version of [ElastAlert2](https://github.com/jertel/elastalert2) was released and depends on python3. Some dependencies also went further.
 
 I use and like this project so I have decided to develop it by my own.
 
@@ -27,7 +27,7 @@ Chcek [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plug
 
 # ElastAlert Server
 
-A server that runs [ElastAlert](https://github.com/Yelp/elastalert) and exposes REST API's for manipulating rules and alerts.
+A server that runs [ElastAlert2](https://github.com/jertel/elastalert2) and exposes REST API's for manipulating rules and alerts.
 
 It works great in combination with fork [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plugin).
 
@@ -67,9 +67,9 @@ docker build -t elastalert .
 
 ### Options
 
-Using a custom ElastAlert version (a [release from github](https://github.com/Yelp/elastalert/releases)) e.g. `master` or `v0.24.0` or `1dc4f30f30d39a689f419ce19c7e2e4d67a50be3` (commit sha)
+Using a custom ElastAlert2 version (a [release from github](https://github.com/jertel/elastalert2/releases)) e.g. `master` or etc
 ```bash
-docker build --build-arg ELASTALERT_VERSION=1dc4f30f30d39a689f419ce19c7e2e4d67a50be3 -t elastalert .
+docker build --build-arg ELASTALERT_VERSION=master -t elastalert .
 ```
 Using a custom mirror
 ```bash
@@ -86,22 +86,22 @@ You can use the following config options:
   "appName": "elastalert-server", // The name used by the logging framework.
   "port": 3030, // The port to bind to
   "wsport": 3333, // The port to bind to for websockets
-  "elastalertPath": "/opt/elastalert",  // The path to the root ElastAlert folder. It's the folder that contains the `setup.py` script.
+  "elastalertPath": "/opt/elastalert",  // The path to the root ElastAlert2 folder. It's the folder that contains the `setup.py` script.
   "start": "2014-01-01T00:00:00", // Optional date to start querying from
   "end": "2016-01-01T00:00:00", // Optional date to stop querying at
   "verbose": true, // Optional, will increase the logging verboseness, which allows you to see information about the state of queries.
   "es_debug": true, // Optional, will enable logging for all queries made to Elasticsearch
-  "debug": false, // Will run ElastAlert in debug mode. This will increase the logging verboseness, change all alerts to DebugAlerter, which prints alerts and suppresses their normal action, and skips writing search and alert metadata back to Elasticsearch.
-  "rulesPath": { // The path to the rules folder containing all the rules. If the folder is empty a dummy file will be created to allow ElastAlert to start.
-    "relative": true, // Whether to use a path relative to the `elastalertPath` folder.
+  "debug": false, // Will run ElastAlert2 in debug mode. This will increase the logging verboseness, change all alerts to DebugAlerter, which prints alerts and suppresses their normal action, and skips writing search and alert metadata back to Elasticsearch.
+  "rulesPath": { // The path to the rules folder containing all the rules. If the folder is empty a dummy file will be created to allow ElastAlert2 to start.
+    "relative": true, // Whether to use a path relative to the `elastalert2 Path` folder.
     "path": "/rules" // The path to the rules folder. 
   },
-  "templatesPath": { // The path to the rules folder containing all the rule templates. If the folder is empty a dummy file will be created to allow ElastAlert to start.
-    "relative": true, // Whether to use a path relative to the `elastalertPath` folder.
+  "templatesPath": { // The path to the rules folder containing all the rule templates. If the folder is empty a dummy file will be created to allow ElastAlert2 to start.
+    "relative": true, // Whether to use a path relative to the `elastalert2 Path` folder.
     "path": "/rule_templates" // The path to the rule templates folder.
   },
   "dataPath": { // The path to a folder that the server can use to store data and temporary files.
-    "relative": true, // Whether to use a path relative to the `elastalertPath` folder.
+    "relative": true, // Whether to use a path relative to the `elastalert Path` folder.
     "path": "/server_data" // The path to the data folder.
   },
   "es_host": "localhost", // For getting metadata and field mappings, connect to this ES server
@@ -110,7 +110,7 @@ You can use the following config options:
 }
 ```
 
-ElastAlert also expects a `elastalert.yaml` with at least the following options.
+ElastAlert2 also expects a `elastalert.yaml` with at least the following options.
 ```yaml
 # The elasticsearch hostname for metadata writeback
 # Note that every rule can have its own elasticsearch host
@@ -128,12 +128,12 @@ writeback_index: elastalert_status
 # Any .yaml file will be loaded as a rule
 rules_folder: rules
 
-# How often ElastAlert will query elasticsearch
+# How often ElastAlert2 will query elasticsearch
 # The unit can be anything from weeks to seconds
 run_every:
   seconds: 5
 
-# ElastAlert will buffer results from the most recent
+# ElastAlert2 will buffer results from the most recent
 # period of time, in case some log sources are not in real time
 buffer_time:
   minutes: 1
@@ -150,11 +150,11 @@ This server exposes the following REST API's:
   
 - **GET `/status`**
 
-    Returns either 'SETUP', 'READY', 'ERROR', 'STARTING', 'CLOSING', 'FIRST_RUN' or 'IDLE' depending on the current ElastAlert process status. 
+    Returns either 'SETUP', 'READY', 'ERROR', 'STARTING', 'CLOSING', 'FIRST_RUN' or 'IDLE' depending on the current ElastAlert2 process status. 
   
 - **GET `/status/control/:action`**
 
-    Where `:action` can be either 'start' or 'stop', which will respectively start or stop the current ElastAlert process.
+    Where `:action` can be either 'start' or 'stop', which will respectively start or stop the current ElastAlert2 process.
   
 - **[WIP] GET `/status/errors`**
 
@@ -162,7 +162,7 @@ This server exposes the following REST API's:
   
 - **GET `/rules`**
 
-    Returns a list of directories and rules that exist in the `rulesPath` (from the config) and are being run by the ElastAlert process.
+    Returns a list of directories and rules that exist in the `rulesPath` (from the config) and are being run by the ElastAlert2 process.
   
 - **GET `/rules/:id`**
 
@@ -185,7 +185,7 @@ This server exposes the following REST API's:
 
 - **GET `/templates`**
 
-    Returns a list of directories and templates that exist in the `templatesPath` (from the config) and are being run by the ElastAlert process.
+    Returns a list of directories and templates that exist in the `templatesPath` (from the config) and are being run by the ElastAlert2 process.
   
 - **GET `/templates/:id`**
 
@@ -222,7 +222,7 @@ This server exposes the following REST API's:
           // "schemaOnly" will only validate the yaml config. "countOnly" will only find the number of matching documents and list available fields.
           "testType": "all",
           
-          // Can be any number larger than 0 and this tells ElastAlert over a period of how many days the test should be run
+          // Can be any number larger than 0 and this tells ElastAlert2 over a period of how many days the test should be run
           "days": "1"
           
           // Whether to send real alerts
@@ -243,7 +243,7 @@ This server exposes the following REST API's:
 
 - **GET `/metadata/:type`**
 
-    Returns metadata from elasticsearch related to elasalert's state. `:type` should be one of: elastalert_status, elastalert, elastalert_error, or silence. See [docs about the elastalert metadata index](https://elastalert.readthedocs.io/en/latest/elastalert_status.html).
+    Returns metadata from elasticsearch related to elasalert's state. `:type` should be one of: elastalert_status, elastalert, elastalert_error, or silence. See [docs about the elastalert2 metadata index](https://elastalert2.readthedocs.io/en/latest/elastalert_status.html).
 
 - **GET `/mapping/:index`**
 

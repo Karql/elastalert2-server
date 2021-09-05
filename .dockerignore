@@ -7,3 +7,4 @@
 !elastalert_modules/
 !rule_templates/
 !config/
+!tsconfig.json
