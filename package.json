@@ -6,7 +6,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/karql/elastalert.git"
+    "url": "git+https://github.com/karql/elastalert2-server.git"
   },
   "directories": {
     "lib": "./lib",

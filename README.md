@@ -8,16 +8,14 @@ New version of [ElastAlert](https://github.com/Yelp/elastalert) was released and
 
 I use and like this project so I have decided to develop it by my own.
 
-Main goal of this fork is to support the latest version of [ElastAlert](https://github.com/Yelp/elastalert) - DONE!
+Main goal of this fork is to support the latest version of [ElastAlert](https://github.com/Yelp/elastalert) - DONE! 
 
-Edit: 2021-09-09
-[ElastAlert](https://github.com/Yelp/elastalert) is also not maintained anymore.
+Edit: 2021-09-09 [ElastAlert](https://github.com/Yelp/elastalert) is also not maintained anymore. [ElastAlert2](https://github.com/jertel/elastalert2) has been born and now it is usied underhood.
 
-[ElastAlert2](https://github.com/jertel/elastalert2) has been born and now it is usied underhood.
 
 In free time maybe something more ;)
 
-Check [Docker Hub](https://hub.docker.com/r/karql/elastalert) for current images.
+Check [Docker Hub](https://hub.docker.com/r/karql/elastalert2-server) for current images.
 
 Chcek [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plugin) repo to get plugin wokring with latest Kibana.
 
@@ -26,7 +24,7 @@ Chcek [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plug
 
 :heavy_check_mark: Support the latest version of [ElastAlert](https://github.com/Yelp/elastalert) - DONE! Check this release: [4.0.0](https://github.com/Karql/elastalert/releases/tag/4.0.0) for more details.
 
-:heavy_check_mark: Support the latest version of [ElastAlert2](https://github.com/jertel/elastalert2) - DONE! Not released yet.
+:heavy_check_mark: Support the latest version of [ElastAlert2](https://github.com/jertel/elastalert2) - DONE! Not released yet (only docker image with latest tag).
 
 ![90%](https://progress-bar.dev/90) Migrate to TypeScript (left some cleanup & refactor)
 
@@ -44,16 +42,16 @@ It works great in combination with fork [ElastAlert Kibana plugin](https://githu
 
 You can also maintain everything directly  from swagger 😍 just add `/swagger-ui/` to the URL.
 
-![GitHub release](https://img.shields.io/github/release/karql/elastalert.svg)
-![Docker pulls](https://img.shields.io/docker/pulls/karql/elastalert.svg)
-![GitHub stars](https://img.shields.io/github/stars/karql/elastalert.svg?style=social&label=Stars)
+![GitHub release](https://img.shields.io/github/release/karql/elastalert2-server.svg)
+![Docker pulls](https://img.shields.io/docker/pulls/karql/elastalert2-server.svg)
+![GitHub stars](https://img.shields.io/github/stars/karql/elastalert2-server.svg?style=social&label=Stars)
 
 ---
 
 ## Installation
-The most convenient way to run the ElastAlert server is by using our Docker container image. The default configuration uses `localhost:9200` as ElasticSearch host, if this is not the case in your setup please edit `es_host` and `es_port` in both the `elastalert.yaml` and `config.json` configuration files.
+The most convenient way to run the ElastAlert2 server is by using our Docker container image. The default configuration uses `localhost:9200` as ElasticSearch host, if this is not the case in your setup please edit `es_host` and `es_port` in both the `elastalert.yaml` and `config.json` configuration files.
 
-To run the Docker image you will want to mount the volumes for configuration and rule files to keep them after container updates. In order to do that conveniently, please do: `git clone https://github.com/karql/elastalert.git; cd elastalert`
+To run the Docker image you will want to mount the volumes for configuration and rule files to keep them after container updates. In order to do that conveniently, please do: `git clone https://github.com/karql/elastalert2-server.git; cd elastalert2-server`
 
 ```bash
 docker run -d -p 3030:3030 -p 3333:3333 \
@@ -63,30 +61,30 @@ docker run -d -p 3030:3030 -p 3333:3333 \
     -v `pwd`/rules:/opt/elastalert/rules \
     -v `pwd`/rule_templates:/opt/elastalert/rule_templates \
     --net="host" \
-    --name elastalert karql/elastalert:latest
+    --name elastalert2-server karql/elastalert2-server:latest
 ```
 
 ## Building Docker image
 
 Clone the repository
 ```bash
-git clone https://github.com/karql/elastalert.git && cd elastalert
+git clone https://github.com/karql/elastalert2-server.git && cd elastalert2-server
 ```
 
 Build the image
 ```
-docker build -t elastalert .
+docker build -t elastalert2-server .
 ```
 
 ### Options
 
 Using a custom ElastAlert2 version (a [release from github](https://github.com/jertel/elastalert2/releases)) e.g. `master` or etc
 ```bash
-docker build --build-arg ELASTALERT_VERSION=master -t elastalert .
+docker build --build-arg ELASTALERT_VERSION=master -t elastalert2-server .
 ```
 Using a custom mirror
 ```bash
-docker build --build-arg ELASTALERT_URL=http://example.mirror.com/master.zip -t elastalert .
+docker build --build-arg ELASTALERT_URL=http://example.mirror.com/master.zip -t elastalert2-server .
 ```
 
 ## Configuration
