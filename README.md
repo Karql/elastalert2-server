@@ -117,6 +117,13 @@ You can use the following config options:
   },
   "es_host": "localhost", // For getting metadata and field mappings, connect to this ES server
   "es_port": 9200, // Port for above
+  "es_username": "", // Option basic-auth username and password for Elasticsearch
+  "es_password": "", // Option basic-auth username and password for Elasticsearch
+  "es_ssl": true, // Enable/Disable SSL
+  "ea_verify_certs": true, //  Verify TLS certificates. false for self-signed certificate
+  "es_ca_certs": "/etc/ssl/elasticsearch/ca", // Path to ca for ElasticSearch (SSL must be enabled)
+  "es_client_cert": "/etc/ssl/elasticsearch/cert", // Path to cert for ElasticSearch (SSL must be enabled)
+  "es_client_key": "/etc/ssl/elasticsearch/key", // Path to key for ElasticSearch (SSL must be enabled)
   "writeback_index": "elastalert_status" // Writeback index to examine for /metadata endpoint
 }
 ```
