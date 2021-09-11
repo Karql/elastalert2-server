@@ -49,10 +49,10 @@ COPY --from=py-ea /usr/bin/elastalert* /usr/bin/
 
 WORKDIR /opt/elastalert-server
 
-COPY package*.json /opt/elastalert-server
+COPY package*.json ./
 RUN npm ci
 
-COPY . /opt/elastalert-server
+COPY . .
 RUN npm run build
 
 COPY config/elastalert.yaml /opt/elastalert/config.yaml
