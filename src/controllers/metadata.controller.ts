@@ -2,10 +2,6 @@ import { Body, Controller, Get, Query, Route, Tags } from "tsoa";
 import { getClient } from "../common/elasticsearch_client";
 import config from '../common/config';
 
-interface Source {
-    foo: string
-}
-
 function escapeLuceneSyntax(str: string) {
     return [].map
         .call(str, char => {
