@@ -1,4 +1,4 @@
-import elasticsearch, { Client } from 'elasticsearch';
+import elasticsearch, { Client } from '@elastic/elasticsearch';
 import config from './config';
 import fs from 'fs';
 
@@ -34,7 +34,7 @@ export function getClient(): Client {
   }
 
   var client = new elasticsearch.Client({
-    hosts: [ `${scheme}://${auth}${config.get().es_host}:${config.get().es_port}`],
+    node: [ `${scheme}://${auth}${config.get().es_host}:${config.get().es_port}`],
     ssl: ssl_body
   });
 

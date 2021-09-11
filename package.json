@@ -13,10 +13,10 @@
     "test": "./test"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "^7.14.1",
     "body-parser": "^1.15.2",
     "bunyan": "^1.8.15",
     "cors": "^2.8.5",
-    "elasticsearch": "^16.7.2",
     "express": "^4.17.1",
     "joi": "^17.4.0",
     "lodash": "^4.17.21",

@@ -2,6 +2,10 @@ import { Body, Controller, Get, Query, Route, Tags } from "tsoa";
 import { getClient } from "../common/elasticsearch_client";
 import config from '../common/config';
 
+interface Source {
+    foo: string
+}
+
 function escapeLuceneSyntax(str: string) {
     return [].map
         .call(str, char => {
@@ -68,9 +72,8 @@ export class MetadataController extends Controller {
                 }
             });
 
-            let mapped = <any>resp;
-            mapped.hits.hits = resp.hits.hits.map(h => h._source);
-            return mapped.hits;
+            const results = resp.body.hits.hits.map((hit: any) => hit._source)
+            return results.hits;
         }
 
         catch (error)
