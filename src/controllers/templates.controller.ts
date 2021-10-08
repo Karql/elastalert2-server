@@ -1,4 +1,4 @@
-import { Controller, Get, Route, Request, Tags, Post, Body, Delete } from "tsoa";
+import { Controller, Get, Route, Request, Tags, Post, Body, Delete } from "@tsoa/runtime";
 import { Request as ExRequest } from 'express';
 
 import ElastalertServer from '../elastalert_server';

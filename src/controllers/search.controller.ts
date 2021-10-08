@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Route, Tags } from "tsoa";
+import { Body, Controller, Post, Route, Tags } from "@tsoa/runtime";
 import { getClient } from "../common/elasticsearch_client";
 
 @Route("/search")

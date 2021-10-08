@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Query, Route, Tags } from "tsoa";
+import { Body, Controller, Get, Query, Route, Tags } from "@tsoa/runtime";
 import { getClient } from "../common/elasticsearch_client";
 import config from '../common/config';
 

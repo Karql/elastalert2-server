@@ -1,4 +1,4 @@
-import { Controller, Get, Route, Tags } from "tsoa";
+import { Controller, Get, Route, Tags } from "@tsoa/runtime";
 import config from '../common/config';
 import RouteLogger from '../routes/route_logger';
 

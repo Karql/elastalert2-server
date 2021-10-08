@@ -1,4 +1,4 @@
-import { Controller, Get, Route, Request, Tags } from "tsoa";
+import { Controller, Get, Route, Request, Tags } from "@tsoa/runtime";
 import { Request as ExpressRequest } from 'express';
 
 import {Status} from '../common/status.model';

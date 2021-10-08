@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Route, Tags, Request } from "tsoa";
+import { Body, Controller, Post, Route, Tags, Request } from "@tsoa/runtime";
 import { Request as ExRequest } from 'express';
 import { TestRuleOptions } from "../models/test/test-rule-options.model";
 import ElastalertServer from "../elastalert_server";
