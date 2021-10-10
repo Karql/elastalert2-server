@@ -24,11 +24,11 @@ Chcek [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plug
 
 :heavy_check_mark: Support the latest version of [ElastAlert](https://github.com/Yelp/elastalert) - DONE! Check this release: [4.0.0](https://github.com/Karql/elastalert/releases/tag/4.0.0) for more details.
 
-:heavy_check_mark: Support the latest version of [ElastAlert2](https://github.com/jertel/elastalert2) - DONE! Not released yet (only docker image with latest tag).
+:heavy_check_mark: Support the latest version of [ElastAlert2](https://github.com/jertel/elastalert2) - DONE! Check this release: [5.0.0-next.0](https://github.com/Karql/elastalert/releases/tag/5.0.0-next.0) for more details.
 
-![90%](https://progress-bar.dev/90) Migrate to TypeScript (left some cleanup & refactor)
+:heavy_check_mark: Migrate to TypeScript
 
-![90%](https://progress-bar.dev/90) Add swagger (left some cleanup & refactor)
+:heavy_check_mark: Add swagger
 
 ![0%](https://progress-bar.dev/0) Prepare a good getting started guide
 

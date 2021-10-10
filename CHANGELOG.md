@@ -1,3 +1,20 @@
+## 5.0.0-next.0
+
+### Changes
+
+* Migrate to TypeScripts
+* Add swagger support and completly redesign setup routes etc. (https://github.com/lukeautry/tsoa)
+* Migrate to [ElastAlert2](https://github.com/jertel/elastalert2)
+* Update npm packages
+* Optimize docker image size
+* Cleanup project a bit
+
+### Removals
+
+* [WIP] GET `/config` - empty endpoint 
+* [WIP] POST `/config` - empty endpoint
+* [WIP] POST `/download` - for security reasons
+
 ## 4.0.0 (2021-03-09)
 
 ### Changes
