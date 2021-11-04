@@ -1,6 +1,20 @@
-# Fork of [bitsensor/elastalert](https://github.com/bitsensor/elastalert)
+# ElastAlert2 Server
 
-Hi there!
+A server that runs [ElastAlert2](https://github.com/jertel/elastalert2) and exposes REST API's for manipulating rules and alerts.
+
+It works great in combination with fork [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plugin).
+
+You can also maintain everything directly  from swagger 😍 just add `/swagger-ui/` to the URL.
+
+Check [Docker Hub](https://hub.docker.com/r/karql/elastalert2-server) for current images.
+
+![GitHub release](https://img.shields.io/github/release/karql/elastalert2-server.svg)
+![Docker pulls](https://img.shields.io/docker/pulls/karql/elastalert2-server.svg)
+![GitHub stars](https://img.shields.io/github/stars/karql/elastalert2-server.svg?style=social&label=Stars)
+
+## Historical background
+
+This project is fork of [bitsensor/elastalert](https://github.com/bitsensor/elastalert)
 
 Official repository is not maintained anymore. Last commit was a long time ago. From that moment some things have changed a bit. 
 
@@ -15,11 +29,6 @@ Edit: 2021-09-09 [ElastAlert](https://github.com/Yelp/elastalert) is also not ma
 
 In free time maybe something more ;)
 
-Check [Docker Hub](https://hub.docker.com/r/karql/elastalert2-server) for current images.
-
-Chcek [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plugin) repo to get plugin wokring with latest Kibana.
-
-
 ## Plans
 
 :heavy_check_mark: Support the latest version of [ElastAlert](https://github.com/Yelp/elastalert) - DONE! Check this release: [4.0.0](https://github.com/Karql/elastalert/releases/tag/4.0.0) for more details.
@@ -31,20 +40,6 @@ Chcek [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plug
 :heavy_check_mark: Add swagger
 
 ![0%](https://progress-bar.dev/0) Prepare a good getting started guide
-
----
-
-# ElastAlert2 Server
-
-A server that runs [ElastAlert2](https://github.com/jertel/elastalert2) and exposes REST API's for manipulating rules and alerts.
-
-It works great in combination with fork [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plugin).
-
-You can also maintain everything directly  from swagger 😍 just add `/swagger-ui/` to the URL.
-
-![GitHub release](https://img.shields.io/github/release/karql/elastalert2-server.svg)
-![Docker pulls](https://img.shields.io/docker/pulls/karql/elastalert2-server.svg)
-![GitHub stars](https://img.shields.io/github/stars/karql/elastalert2-server.svg?style=social&label=Stars)
 
 ---
 
