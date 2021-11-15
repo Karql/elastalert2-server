@@ -1,5 +1,5 @@
 FROM alpine:3.14 as build-elastalert
-ARG ELASTALERT_VERSION=2.2.2 
+ARG ELASTALERT_VERSION=2.2.3
 ENV ELASTALERT_VERSION=${ELASTALERT_VERSION}
 # URL from which to download ElastAlert 2.
 ARG ELASTALERT_URL=https://github.com/jertel/elastalert2/archive/refs/tags/$ELASTALERT_VERSION.zip
