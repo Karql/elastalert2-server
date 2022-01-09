@@ -1,5 +1,5 @@
-FROM alpine:3.14 as build-elastalert
-ARG ELASTALERT_VERSION=2.2.3
+FROM alpine:3.15 as build-elastalert
+ARG ELASTALERT_VERSION=2.3.0
 ENV ELASTALERT_VERSION=${ELASTALERT_VERSION}
 # URL from which to download ElastAlert 2.
 ARG ELASTALERT_URL=https://github.com/jertel/elastalert2/archive/refs/tags/$ELASTALERT_VERSION.zip
@@ -45,7 +45,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:14-alpine3.14
+FROM node:14-alpine3.15
 
 LABEL description="ElastAlert2 Server"
 LABEL maintainer="Karql <karql.pl@gmail.com>"
