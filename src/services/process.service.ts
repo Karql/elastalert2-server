@@ -3,13 +3,17 @@ import config from '../common/config';
 import Logger from '../common/logger';
 import { Status } from '../common/status.model';
 
-let logger = new Logger('ProcessService');
+const logger = new Logger('ProcessService');
+
+const ElastalertSplitLogsRegexp = /(?<level>DEBUG|INFO|WARNING|ERROR|CRITICAL):(?<type>\S+?):(?<message>.*?)(?=(?:(?:DEBUG|INFO|WARNING|ERROR|CRITICAL):\S+:)|$)/sg;
+const ElastalertCleanMessageRegexp = /\n|\s{2,}/g;
+const ElastalertLoggers: { [Key: string]: Logger } = {};
 
 export default class ProcessService {
   private _onExitCallbacks: {(): void;}[];
   private _status: Status;
   private _process: ChildProcessWithoutNullStreams | null;
-
+  
   constructor() {
     this._onExitCallbacks = [];
     this._status = Status.IDLE;
@@ -52,11 +56,12 @@ export default class ProcessService {
     });
 
     // Redirect stdin/stderr to logger
+    // create_index does not use logger
     if (indexCreate.stdout && indexCreate.stdout.toString() !== '') {
-      logger.info(indexCreate.stdout.toString());
+      this.logElastalert("INFO", "create_index", indexCreate.stdout.toString())
     }
     if (indexCreate.stderr && indexCreate.stderr.toString() !== '') {
-      logger.error(indexCreate.stderr.toString());
+      this.logElastalert("ERROR", "create_index", indexCreate.stderr.toString())
     }
 
     // Set listeners for index create exit
@@ -109,10 +114,10 @@ export default class ProcessService {
 
     // Redirect stdin/stderr to logger
     this._process.stdout.on('data', (data) => {
-      logger.info(data.toString());
+      this.processElastalertLogs(data.toString());
     });
     this._process.stderr.on('data', (data) => {
-      logger.error(data.toString());
+      this.processElastalertLogs(data.toString());
     });
 
     // Set listeners for ElastAlert exit
@@ -153,6 +158,72 @@ export default class ProcessService {
     } else {
       // Do not do anything if ElastAlert is not running
       logger.info('ElastAlert is not running');
+    }
+  }
+
+  private getElastalertLogger(type: string): Logger {
+    if (ElastalertLoggers[type] === undefined) {
+      ElastalertLoggers[type] = new Logger(type, "Elastalert");
+    }
+    
+    return ElastalertLoggers[type];
+  }
+
+  public processElastalertLogs(logs: string) {
+    if (logs == null || logs.trim() === '') {
+      return;
+    }
+    
+    let matches = logs.matchAll(ElastalertSplitLogsRegexp);
+    let anyMatch = false;
+
+    for (const match of matches) {
+      if (match.groups === undefined) {
+        break;
+      }
+
+      let level = match.groups['level'];
+      let type = match.groups['type'];
+      let msg = match.groups['message'];
+
+      this.logElastalert(level, type, msg);
+      anyMatch = true;
+    }
+
+    if (!anyMatch) {
+      logger.warn(`No matches while process elastalert log: ${logs}`);
+    }
+  }
+
+  private logElastalert(level: string, type: string, msg: string) {
+    let elastalertLogger = this.getElastalertLogger(type);
+    msg = msg.trim();
+    msg = msg.replace(ElastalertCleanMessageRegexp, ' ');
+
+    switch (level) {
+        case "DEBUG": {
+          elastalertLogger.debug(msg);
+          break;
+        } 
+        case "INFO": {
+          elastalertLogger.info(msg);
+          break;
+        }
+        case "WARNING": {
+          elastalertLogger.warn(msg);
+        }
+        case "ERROR": {
+          elastalertLogger.error(msg);
+          break;          
+        }
+        case "CRITICAL": {
+          elastalertLogger.fatal(msg);
+          break;
+        }
+        default: {
+          elastalertLogger.info(msg);
+          break;
+        }
     }
   }
 }

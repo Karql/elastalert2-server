@@ -1,3 +1,12 @@
+## 5.0.0-next.2
+
+### Changes
+
+* Improve logging from Elastalert ([#42](https://github.com/Karql/elastalert2-server/issues/42))
+    * Use dedicated logger for elastalert 
+    * Convert multiline log into singleline
+    * Remove whitespaces
+
 ## 5.0.0-next.1
 
 ### Changes

@@ -1,7 +1,12 @@
 import bunyan from 'bunyan';
 
-const logger = bunyan.createLogger({
-  name: 'elastalert-server'
-});
+const logger = {
+  ElastalertServer: bunyan.createLogger({
+    name: 'elastalert-server'
+  }),
+  Elastalert: bunyan.createLogger({
+    name: 'elastalert'
+  })
+}
 
 export default logger;
