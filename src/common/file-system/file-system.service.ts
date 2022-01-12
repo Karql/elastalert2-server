@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs, { read } from 'fs';
 import { join as joinPath } from 'path';
 import mkdirp from 'mkdirp';
 import { DirectoryIndex } from './directory-index.model';
@@ -6,44 +6,27 @@ import { DirectoryIndex } from './directory-index.model';
 export default class FileSystemService {
   constructor() { }
 
-  readDirectory(path: string): Promise<DirectoryIndex> {
+  async readDirectory(path: string): Promise<DirectoryIndex> {
     const self = this;
-    return new Promise(function (resolve, reject) {
-      try {
-        fs.readdir(path, function (error, elements) {
-          if (error) {
-            reject(error);
-          } else {
-            let statCount = 0;
-            let directoryIndex = self.getEmptyDirectoryIndex();
 
-            if (elements.length == 0) {
-              resolve(directoryIndex);
-            }
+    let elements = await fs.promises.readdir(path);
+    let directoryIndex = self.getEmptyDirectoryIndex();
 
-            elements.forEach(function (element) {
-              fs.stat(joinPath(path, element), function (error, stats) {
-                if (stats.isDirectory()) {
-                  directoryIndex.directories.push(element);
-                } else if (stats.isFile()) {
-                  directoryIndex.files.push(element);
-                }
+    for(let element of elements)
+    {
+      let stats = await fs.promises.stat(joinPath(path, element));
 
-                statCount++;
-                if (statCount === elements.length) {
-                  resolve(directoryIndex);
-                }
-              });
-            });
-          }
-        });
-      } catch (error) {
-        reject(error);
+      if (stats.isDirectory()) {
+        directoryIndex.directories.push(element);
+      } else if (stats.isFile()) {
+        directoryIndex.files.push(element);
       }
-    });
+    }
+
+    return directoryIndex;
   }
 
-  directoryExists(path: string) {
+  directoryExists(path: string): Promise<boolean> {
     return this._exists(path);
   }
 
@@ -64,33 +47,16 @@ export default class FileSystemService {
     return this._exists(path);
   }
 
-  readFile(path: string): Promise<string> {
-    return new Promise(function (resolve, reject) {
-      fs.readFile(path, 'utf8', function (error, content) {
-        error ? reject(error) : resolve(content);
-      });
-    });
+  async readFile(path: string): Promise<string> {
+    return await fs.promises.readFile(path, 'utf8');
   }
 
-  writeFile(path: string, content = ''): Promise<void> {
-    return new Promise<void>(function (resolve, reject) {
-      try {
-        fs.writeFile(path, content, function (error) {
-          error ? reject(error) : resolve();
-        });
-      } catch (error) {
-        console.log(error);
-        reject(error);
-      }
-    });
+  async writeFile(path: string, content = ''): Promise<void> {
+    await fs.promises.writeFile(path, content)
   }
 
-  deleteFile(path: string): Promise<void> {
-    return new Promise<void>(function (resolve, reject) {
-      fs.unlink(path, function (error) {
-        error ? reject(error) : resolve();
-      });
-    });
+  async deleteFile(path: string): Promise<void> {
+    fs.promises.unlink(path);
   }
 
   getEmptyDirectoryIndex(): DirectoryIndex {
@@ -100,15 +66,14 @@ export default class FileSystemService {
     };
   }
 
-  _exists(path: string) {
-    return new Promise(function (resolve, reject) {
-      try {
-        fs.access(path, fs.constants.F_OK, function (error) {
-          error ? resolve(false) : resolve(true);
-        });
-      } catch (error) {
-        reject(error);
-      }
-    });
+  async _exists(path: string): Promise<boolean> {
+    try {
+      await fs.promises.access(path, fs.constants.F_OK);
+      return true;
+    }
+
+    catch {
+      return false;
+    }
   }
 }
