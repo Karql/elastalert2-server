@@ -1,3 +1,10 @@
+## Upcoming
+
+### Changes
+
+* Refactor file-system-service.ts
+* Remove unused files
+
 ## 5.0.0-next.2
 
 ### Changes
