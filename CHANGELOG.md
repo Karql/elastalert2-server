@@ -1,7 +1,8 @@
-## Upcoming
+## 5.0.0-next.3
 
 ### Changes
 
+* Update eleastalert2 to v2.3.0
 * Refactor file-system-service.ts
 * Remove unused files
 
