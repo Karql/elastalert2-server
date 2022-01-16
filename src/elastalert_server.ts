@@ -29,12 +29,12 @@ export default class ElastalertServer {
   private _templatesService: TemplatesService;
   private _testService: TestService;
 
-  private _runningServer: Server | null; 
+  private _runningServer: Server | null;
   private _fileSystemService: FileSystemService;
 
   constructor() {
     this._express = express();
-    
+
     this._runningTimeouts = [];
 
     this._processService = new ProcessService();
@@ -44,7 +44,7 @@ export default class ElastalertServer {
 
     this._runningServer = null;
     this._fileSystemService = new FileSystemService();
-    
+
 
     // Set listener on process exit (SIGINT == ^C)
     process.on('SIGINT', () => {
@@ -78,9 +78,9 @@ export default class ElastalertServer {
     return this._testService;
   }
 
-  async start() { 
+  async start() {
     const self = this;
-    
+
     try {
       self._express.use(cors());
       self._express.use(bodyParser.json());
@@ -97,7 +97,7 @@ export default class ElastalertServer {
           },
         })
       );
-      
+
 
       self._setupRouter();
 
@@ -143,8 +143,8 @@ export default class ElastalertServer {
       // self._fileSystemController.createDirectoryIfNotExists(self.getDataFolder())
       // .catch(function (error) {
       //   logger.error('Error creating data folder with error:', error);
-      // });  
-        
+      // });
+
       logger.info('Server listening on port ' + config.get().port);
 
       let wss = listen(config.get().wsport);
@@ -160,13 +160,13 @@ export default class ElastalertServer {
               self._testService?.testRule(rule, options, ws);
             }
           } catch (error) {
-            console.log(error);
+            logger.error('Failed to test rule with error:', error);
           }
         });
       });
 
       logger.info('Websocket listening on port 3333');
-    } 
+    }
     catch (error) {
       logger.error('Starting server failed with error:', error);
       process.exit(1);

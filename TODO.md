@@ -17,3 +17,6 @@
 17) Logging requst change RouteLogger to ~~morgan (https://rsbh.dev/blog/rest-api-with-express-typescript)~~ bunyan-middleware (https://www.npmjs.com/package/bunyan-middleware)
 18) Split logic form metadata.controller.ts to metadata.service.ts 
 19) Migrate latest fixes from https://github.com/johnsusek/elastalert-server
+~~20) Verify test rule on WS
+IMO something is wrong here: e84a3fa8fc79520eaddf701c220d3f92291bb9c9
+Last catch in testRule() supresses all errors~~
