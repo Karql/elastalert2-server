@@ -13,7 +13,7 @@ export default class ProcessService {
   private _onExitCallbacks: {(): void;}[];
   private _status: Status;
   private _process: ChildProcessWithoutNullStreams | null;
-  
+
   constructor() {
     this._onExitCallbacks = [];
     this._status = Status.IDLE;
@@ -165,7 +165,7 @@ export default class ProcessService {
     if (ElastalertLoggers[type] === undefined) {
       ElastalertLoggers[type] = new Logger(type, "Elastalert");
     }
-    
+
     return ElastalertLoggers[type];
   }
 
@@ -173,7 +173,7 @@ export default class ProcessService {
     if (logs == null || logs.trim() === '') {
       return;
     }
-    
+
     let matches = logs.matchAll(ElastalertSplitLogsRegexp);
     let anyMatch = false;
 
@@ -204,7 +204,7 @@ export default class ProcessService {
         case "DEBUG": {
           elastalertLogger.debug(msg);
           break;
-        } 
+        }
         case "INFO": {
           elastalertLogger.info(msg);
           break;
@@ -214,7 +214,7 @@ export default class ProcessService {
         }
         case "ERROR": {
           elastalertLogger.error(msg);
-          break;          
+          break;
         }
         case "CRITICAL": {
           elastalertLogger.fatal(msg);

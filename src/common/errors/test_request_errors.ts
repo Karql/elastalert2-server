@@ -17,3 +17,9 @@ export class BodyNotSendError extends RequestError {
     super('bodyNotSend', 'Testing: rule failed because no request body was send.', 400);
   }
 }
+
+export class TestRuleError extends RequestError {
+  constructor(message: string) {
+    super('testRuleError', message, 500);
+  }
+}

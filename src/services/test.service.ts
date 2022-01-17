@@ -7,6 +7,7 @@ import {ChildProcessWithoutNullStreams, spawn} from 'child_process';
 import ElastalertServer from '../elastalert_server';
 import WebSocket from 'ws';
 import { TestRuleOptions, TestRuleOptionsDefaults } from '../models/test/test-rule-options.model';
+import { TestRuleError } from '../common/errors/test_request_errors';
 
 let logger = new Logger('TestService');
 let fileSystem = new FileSystemService();
@@ -69,14 +70,14 @@ export default class TestService {
     testProcess.stdout.on('data', (data) => self.onProcessStd(data.toString(), stdoutLines, socket, 'result'));
     testProcess.stderr.on('data', (data) => self.onProcessStd(data.toString(), stderrLines, socket, 'progress'));
 
-    let exitPromise = new Promise(async (resolve, reject) => {
+    let exitPromise = new Promise<string>(async (resolve, reject) => {
       testProcess.on('exit', async (statusCode) => {
         await self.deleteFile(tempFilePath);
 
         // For socket resolve immediately
         // data was already returned
         if (socket) {
-          resolve(null);
+          resolve('');
         }
 
         if (statusCode === 0) {
@@ -89,13 +90,13 @@ export default class TestService {
           }
         }
         else {
-          reject(stderrLines.join('\n'));
+          reject(new TestRuleError(stderrLines.join('\n')));
           logger.error(stderrLines.join('\n'));
         }
       });
     });
 
-    await exitPromise;
+    return await exitPromise;
   }
 
   private getTestFolder() {

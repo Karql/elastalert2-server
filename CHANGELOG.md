@@ -1,7 +1,8 @@
-## Upcoming
+## 5.0.0-next.4
 
 ### Changes
 
+* Fix testing rules (return 500 like before migration to typescript)
 * Remove unused files
 
 ## 5.0.0-next.3
