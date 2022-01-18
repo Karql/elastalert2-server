@@ -12,127 +12,109 @@ import RequestError from '../common/errors/request_error';
 let logger = new Logger('RulesService');
 
 export default class RulesService {
-  private _fileSystemController: FileSystemService;
-  private _rulesFolder: string;
+  private fileSystemController: FileSystemService;
+  private rulesFolder: string;
 
   constructor() {
-    this._fileSystemController = new FileSystemService();
-    this._rulesFolder = this._getRulesFolder();
+    this.fileSystemController = new FileSystemService();
+    this.rulesFolder = this.getRulesFolder();
   }
 
-  getRules(path: string): Promise<{ rules: string[]}> {
+  public async getRules(path: string): Promise<{ rules: string[]}> {
     const self = this;
-    const fullPath = joinPath(self._rulesFolder, path);
+    const fullPath = joinPath(self.rulesFolder, path);
 
-    return new Promise(function(resolve, reject) {
-      self._fileSystemController.readDirectory(fullPath)
-        .then(function(directoryIndex) {
-          let rules = directoryIndex.files
+    try {
+      let directoryIndex = await this.fileSystemController.readDirectory(fullPath);
+      let rules = directoryIndex.files
             .filter(fileName => pathExtension(fileName).toLowerCase() === '.yaml')
             .map(fileName => fileName.slice(0, -5));
 
-          resolve({rules: rules}); // TODO: flat model?
-        })
-        .catch(function(error) {
-          // Check if the requested folder is the rules root folder
-          if (normalizePath(self._rulesFolder) === fullPath) {
-            // Try to create the root folder
-            mkdirp(fullPath)
-              .then(() => resolve({rules: []}))
-              .catch(() => {
-                logger.warn(`The rules root folder (${fullPath}) couldn't be found nor could it be created by the file system.`);
-                reject(new RulesRootFolderNotCreatableError());
-              });          
-          } else {
-            logger.warn(`The requested folder (${fullPath}) couldn't be found / read by the server. Error:`, error);
-            reject(new RulesFolderNotFoundError(path));
-          }
-        });
-    });
+      return {rules: rules};
+    }
+    catch(error) {
+      if (normalizePath(self.rulesFolder) === fullPath) {
+        // Try to create the root folder
+
+        try {
+          mkdirp(fullPath);
+          return {rules: []};
+        }
+
+        catch(error) {
+          logger.warn(`The rules root folder (${fullPath}) couldn't be found nor could it be created by the file system.`, error);
+          throw new RulesRootFolderNotCreatableError();
+        }
+      }
+      else {
+        logger.warn(`The requested folder (${fullPath}) couldn't be found / read by the server. Error:`, error);
+        throw new RulesFolderNotFoundError(path);
+      }
+    }
   }
 
   // TODO: refactor split to methods
-  rule(id: string): Promise<{ get(): Promise<string>, edit(body: string): Promise<void>, delete(): Promise<void>  }> {
+  public async rule(id: string): Promise<{ get(): Promise<string>, edit(body: string): Promise<void>, delete(): Promise<void>  }> {
     const self = this;
-    return new Promise(function(resolve, reject) {
-      self._findRule(id)
-        .then(function(access) {
-          console.log('rule resolved');
-          resolve({
-            get: function() {
-              if (access.read) {
-                return self._getRule(id);
-              }
-              return self._getErrorPromise<string>(new RuleNotReadableError(id));
-            },
-            edit: function(body: string) {
-              if (access.write) {
-                return self._editRule(id, body);
-              }
-              return self._getErrorPromise<void>(new RuleNotWritableError(id));
-            },
-            delete: function() {
-              return self._deleteRule(id);
-            }
-          });
-        })
-        .catch(function() {
-          console.log('catched');
-          reject(new RuleNotFoundError(id));
-        });
-    });
+
+    let access = await self.findRule(id);
+
+    return {
+      get: async () => {
+        if (access.read) {
+          return await self.getRule(id);
+        }
+        throw new RuleNotReadableError(id);
+      },
+      edit: async (body: string) => {
+        if (access.write) {
+          return self.editRule(id, body);
+        }
+        throw new RuleNotWritableError(id);
+      },
+      delete: async() => {
+        await self.deleteRule(id);
+      }
+    }
   }
 
-  createRule(id: string, content: string) {
-    return this._editRule(id, content);
+  public createRule(id: string, content: string) {
+    return this.editRule(id, content);
   }
 
-  _findRule(id: string): Promise<{read: boolean, write: boolean}> {
+  private async findRule(id: string): Promise<{read: boolean, write: boolean}> {
     let fileName = id + '.yaml';
     const self = this;
 
-    return new Promise(function(resolve, reject) {
-      self._fileSystemController.fileExists(joinPath(self._rulesFolder, fileName))
-        .then(function(exists) {
-          if (!exists) {
-            reject();
-          } else {
-            //TODO: Get real permissions
-            //resolve(permissions);
-            resolve({
-              read: true,
-              write: true
-            });
-          }
-        })
-        .catch(function(error) {
-          reject(error);
-        });
-    });
+    let exists = await this.fileSystemController.fileExists(joinPath(self.rulesFolder, fileName));
+
+    if (!exists) {
+      throw new RuleNotFoundError(id);
+    }
+
+    //TODO: Get real permissions
+    return {
+      read: true,
+      write: true
+    };
   }
 
-  _getRule(id: string) {
-    const path = joinPath(this._rulesFolder, id + '.yaml');
-    return this._fileSystemController.readFile(path);
+  private getRule(id: string) {
+    const path = joinPath(this.rulesFolder, id + '.yaml');
+    return this.fileSystemController.readFile(path);
   }
 
-  _editRule(id: string, body: string) {
-    const path = joinPath(this._rulesFolder, id + '.yaml');
-    return this._fileSystemController.writeFile(path, body);
+  private editRule(id: string, body: string) {
+    const path = joinPath(this.rulesFolder, id + '.yaml');
+    return this.fileSystemController.writeFile(path, body);
   }
 
-  _deleteRule(id: string) {
-    const path = joinPath(this._rulesFolder, id + '.yaml');
-    return this._fileSystemController.deleteFile(path);
+  private deleteRule(id: string) {
+    const path = joinPath(this.rulesFolder, id + '.yaml');
+    return this.fileSystemController.deleteFile(path);
   }
 
-  _getErrorPromise<T>(error: RequestError) {
-    return new Promise<T>(function(resolve, reject) {
-      reject(error);
-    });
-  }
-
-  _getRulesFolder(): string {
+  private getRulesFolder(): string {
     const ruleFolderSettings = config.get().rulesPath;
 
     if (ruleFolderSettings.relative) {
