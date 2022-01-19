@@ -20,28 +20,27 @@ export default class RulesService {
     this.rulesFolder = this.getRulesFolder();
   }
 
-  public async getRules(path: string): Promise<{ rules: string[]}> {
+  public async getRules(path: string): Promise<{ rules: string[] }> {
     const self = this;
     const fullPath = joinPath(self.rulesFolder, path);
 
     try {
       let directoryIndex = await this.fileSystemController.readDirectory(fullPath);
       let rules = directoryIndex.files
-            .filter(fileName => pathExtension(fileName).toLowerCase() === '.yaml')
-            .map(fileName => fileName.slice(0, -5));
+        .filter(fileName => pathExtension(fileName).toLowerCase() === '.yaml')
+        .map(fileName => fileName.slice(0, -5));
 
-      return {rules: rules};
+      return { rules: rules };
     }
-    catch(error) {
+    catch (error) {
+      // Check if the requested folder is the rules root folder
       if (normalizePath(self.rulesFolder) === fullPath) {
         // Try to create the root folder
-
         try {
-          mkdirp(fullPath);
-          return {rules: []};
+          await mkdirp(fullPath);
+          return { rules: [] };
         }
-
-        catch(error) {
+        catch (error) {
           logger.warn(`The rules root folder (${fullPath}) couldn't be found nor could it be created by the file system.`, error);
           throw new RulesRootFolderNotCreatableError();
         }
@@ -54,26 +53,26 @@ export default class RulesService {
   }
 
   // TODO: refactor split to methods
-  public async rule(id: string): Promise<{ get(): Promise<string>, edit(body: string): Promise<void>, delete(): Promise<void>  }> {
+  public async rule(id: string): Promise<{ get(): Promise<string>, edit(body: string): Promise<void>, delete(): Promise<void> }> {
     const self = this;
 
     let access = await self.findRule(id);
 
     return {
-      get: async () => {
+      get: () => {
         if (access.read) {
-          return await self.getRule(id);
+          return self.getRule(id);
         }
         throw new RuleNotReadableError(id);
       },
-      edit: async (body: string) => {
+      edit: (body: string) => {
         if (access.write) {
           return self.editRule(id, body);
         }
         throw new RuleNotWritableError(id);
       },
-      delete: async() => {
-        await self.deleteRule(id);
+      delete: () => {
+        return self.deleteRule(id);
       }
     }
   }
@@ -82,11 +81,10 @@ export default class RulesService {
     return this.editRule(id, content);
   }
 
-  private async findRule(id: string): Promise<{read: boolean, write: boolean}> {
+  private async findRule(id: string): Promise<{ read: boolean, write: boolean }> {
     let fileName = id + '.yaml';
-    const self = this;
 
-    let exists = await this.fileSystemController.fileExists(joinPath(self.rulesFolder, fileName));
+    let exists = await this.fileSystemController.fileExists(joinPath(this.rulesFolder, fileName));
 
     if (!exists) {
       throw new RuleNotFoundError(id);
@@ -119,7 +117,8 @@ export default class RulesService {
 
     if (ruleFolderSettings.relative) {
       return joinPath(config.get().elastalertPath, ruleFolderSettings.path);
-    } else {
+    }
+    else {
       return ruleFolderSettings.path;
     }
   }

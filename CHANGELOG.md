@@ -1,3 +1,10 @@
+## Upcomming
+
+### Changes
+
+* Refactor rules.service.ts
+* Refactor templates.service.ts
+
 ## 5.0.0-next.4
 
 ### Changes
