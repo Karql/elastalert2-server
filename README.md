@@ -33,7 +33,7 @@ In free time maybe something more ;)
 
 :heavy_check_mark: Support the latest version of [ElastAlert](https://github.com/Yelp/elastalert) - DONE! Check this release: [4.0.0](https://github.com/Karql/elastalert/releases/tag/4.0.0) for more details.
 
-:heavy_check_mark: Support the latest version of [ElastAlert2](https://github.com/jertel/elastalert2) - DONE! Check this release: [5.0.0-next.5](https://github.com/Karql/elastalert/releases/tag/5.0.0-next.5) for more details.
+:heavy_check_mark: Support the latest version of [ElastAlert2](https://github.com/jertel/elastalert2) - DONE! Check this release: [5.0.0-next.0](https://github.com/Karql/elastalert/releases/tag/5.0.0-next.0) for more details.
 
 :heavy_check_mark: Migrate to TypeScript
 
