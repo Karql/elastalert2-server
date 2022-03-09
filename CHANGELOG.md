@@ -1,7 +1,8 @@
-## Upcomming
+## 5.0.0-next.5
 
 ### Changes
 
+* Update eleastalert2 to v2.4.0 (Supports elastic v8. ⚠️When upgrading from elastic v7 first check [Upgrade Guide](https://elastalert2.readthedocs.io/en/latest/recipes/faq.html#does-elastalert-2-support-elasticsearch-8))
 * Refactor rules.service.ts
 * Refactor templates.service.ts
 
