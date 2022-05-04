@@ -1,3 +1,9 @@
+## 5.0.0-next.6
+
+### Changes
+
+* Update eleastalert2 to v2.5.0
+
 ## 5.0.0-next.5
 
 ### Changes
