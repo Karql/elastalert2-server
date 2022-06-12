@@ -1,5 +1,5 @@
-FROM alpine:3.15 as build-elastalert
-ARG ELASTALERT_VERSION=2.5.0
+FROM alpine:3.16 as build-elastalert
+ARG ELASTALERT_VERSION=2.5.1
 ENV ELASTALERT_VERSION=${ELASTALERT_VERSION}
 # URL from which to download ElastAlert 2.
 ARG ELASTALERT_URL=https://github.com/jertel/elastalert2/archive/refs/tags/$ELASTALERT_VERSION.zip
@@ -32,10 +32,14 @@ RUN apk add --update --no-cache \
 
 WORKDIR "${ELASTALERT_HOME}"
 
+# Temp fix for: '#11 46.97 error: requests 2.28.0 is installed but requests==2.27.1 is required by {'tencentcloud-sdk-python'}'
+RUN sed -i 's/requests>=2.27.1/requests==2.27.1/' requirements.txt
+RUN sed -i 's/requests>=2.27.1/requests==2.27.1/' setup.py
+
 # Install ElastAlert 2.
 RUN python3 setup.py install
 
-FROM node:14-alpine as build-server
+FROM node:16.15-alpine3.16 as build-server
 
 WORKDIR /opt/elastalert-server
 
@@ -45,7 +49,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:14-alpine3.15
+FROM node:16.15-alpine3.16
 
 LABEL description="ElastAlert2 Server"
 LABEL maintainer="Karql <karql.pl@gmail.com>"
@@ -56,7 +60,7 @@ ENV TZ Etc/UTC
 RUN apk add --update --no-cache curl tzdata python3 make libmagic && \
     ln -s /usr/bin/python3 /usr/bin/python
 
-COPY --from=build-elastalert /usr/lib/python3.9/site-packages /usr/lib/python3.9/site-packages
+COPY --from=build-elastalert /usr/lib/python3.10/site-packages /usr/lib/python3.10/site-packages
 COPY --from=build-elastalert /opt/elastalert /opt/elastalert
 COPY --from=build-elastalert /usr/bin/elastalert* /usr/bin/
 
