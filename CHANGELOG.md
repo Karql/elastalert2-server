@@ -1,3 +1,13 @@
+## 5.0.0-next.7
+
+### Changes
+
+* Update eleastalert2 to v2.5.1
+* Update build image to alpine:3.16
+* Update main image to node:16.15-alpine3.16 (node16 && python3.10)
+* npm audit fix
+* temp fix for setup.py
+
 ## 5.0.0-next.6
 
 ### Changes
