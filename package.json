@@ -14,15 +14,15 @@
   },
   "dependencies": {
     "@tsoa/runtime": "^3.9.0",
-    "body-parser": "^1.15.2",
+    "body-parser": "^1.20.0",
     "bunyan": "^1.8.15",
     "cors": "^2.8.5",
     "elasticsearch": "^16.7.3",
-    "express": "^4.17.1",
-    "joi": "^17.4.0",
+    "express": "^4.18.1",
+    "joi": "^17.6.0",
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",
-    "randomstring": "^1.1.5",
+    "randomstring": "^1.2.2",
     "raven": "^2.6.1",
     "swagger-ui-express": "^4.1.6",
     "ws": "^7.5.5"
@@ -43,7 +43,7 @@
     "husky": "^0.14.3",
     "nodemon": "^2.0.16",
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.3"
+    "typescript": "^4.7.3"
   },
   "scripts": {
     "dev": "concurrently \"nodemon\" \"nodemon --config nodemon-spec.json\"",
