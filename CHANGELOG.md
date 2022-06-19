@@ -3,6 +3,7 @@
 ### Changes
 
 * Update npm packages
+* Remove deprecated body-parser
 
 ## 5.0.0-next.7
 

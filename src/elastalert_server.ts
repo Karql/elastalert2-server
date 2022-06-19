@@ -83,8 +83,8 @@ export default class ElastalertServer {
 
     try {
       self._express.use(cors());
-      self._express.use(bodyParser.json());
-      self._express.use(bodyParser.urlencoded({ extended: true }));
+      self._express.use(express.json());
+      self._express.use(express.urlencoded({ extended: true }));
 
       // TODO
       self._express.use(express.static("dist"));
