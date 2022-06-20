@@ -4,6 +4,7 @@
 
 * Update npm packages
 * Remove deprecated body-parser
+* Remove temp fix for setup.py
 
 ## 5.0.0-next.7
 

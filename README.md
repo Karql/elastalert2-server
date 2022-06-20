@@ -68,7 +68,7 @@ git clone https://github.com/karql/elastalert2-server.git && cd elastalert2-serv
 
 Build the image
 ```
-docker build -t elastalert2-server .
+docker build -t karql/elastalert2-server .
 ```
 
 ### Options

@@ -32,10 +32,6 @@ RUN apk add --update --no-cache \
 
 WORKDIR "${ELASTALERT_HOME}"
 
-# Temp fix for: '#11 46.97 error: requests 2.28.0 is installed but requests==2.27.1 is required by {'tencentcloud-sdk-python'}'
-RUN sed -i 's/requests>=2.27.1/requests==2.27.1/' requirements.txt
-RUN sed -i 's/requests>=2.27.1/requests==2.27.1/' setup.py
-
 # Install ElastAlert 2.
 RUN python3 setup.py install
 
