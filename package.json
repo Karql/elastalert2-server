@@ -22,7 +22,6 @@
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",
     "randomstring": "^1.2.2",
-    "raven": "^2.6.1",
     "swagger-ui-express": "^4.1.6",
     "ws": "^7.5.5"
   },
