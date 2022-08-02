@@ -1,10 +1,12 @@
-## Upcoming
+## 5.0.0-next.8
 
 ### Changes
 
+* Update eleastalert2 to v2.6.0
 * Update npm packages
 * Remove deprecated body-parser
 * Remove temp fix for setup.py
+* Remove husky
 
 ### Breaking changes
 
