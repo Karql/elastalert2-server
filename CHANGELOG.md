@@ -1,3 +1,10 @@
+## UPCOMMING
+
+### Changes
+
+* Update eleastalert2 to v2.7.0
+* Update npm packages
+
 ## 5.0.0-next.8
 
 ### Changes
