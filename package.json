@@ -21,7 +21,7 @@
     "joi": "^17.6.3",
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",
-    "randomstring": "^1.2.2",
+    "randomstring": "^1.2.3",
     "swagger-ui-express": "^4.5.0",
     "ws": "^8.9.0"
   },
