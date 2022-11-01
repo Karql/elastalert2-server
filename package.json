@@ -18,7 +18,7 @@
     "cors": "^2.8.5",
     "elasticsearch": "^16.7.3",
     "express": "^4.18.2",
-    "joi": "^17.6.4",
+    "joi": "^17.7.0",
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",
     "randomstring": "^1.2.3",
