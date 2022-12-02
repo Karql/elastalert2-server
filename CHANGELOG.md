@@ -1,5 +1,7 @@
 ## UPCOMING
 
+* Update eleastalert2 to v2.9.0
+* Update main image to node:16.18-alpine3.16
 * Update npm packages
 
 ## 5.0.0-next.10
