@@ -261,21 +261,6 @@ This server exposes the following REST API's:
 - **POST `/search/:index`**
 
     Performs elasticsearch query on behalf of the API. JSON body to this endpoint will become body of an ES search. 
-        
-## Contributing
-Want to contribute to this project? Great! Please read our [contributing guidelines](CONTRIBUTING.md) before submitting an issue or a pull request.
 
-**We only accept pull requests on our [GitHub repository](https://github.com/bitsensor/elastalert)!**
- 
-## Contact
-We'd love to help you if you have any questions. You can contact us by sending an e-mail to [dev@bitsensor.io](mailto:dev@bitsensor.io) or by using the [contact info on our website]().
- 
-## License
-This project is [BSD Licensed](../LICENSE.md) with some modifications. Note that this only accounts for the ElastAlert Server, not ElastAlert itself ([ElastAlert License](https://github.com/Yelp/elastalert#license)).
-
-## Disclaimer
-We [(BitSensor)](https://www.bitsensor.io) do not have any rights over the original [ElastAlert](https://github.com/Yelp/elastalert) project from [Yelp](https://www.yelp.com/). We do not own any trademarks or copyright to the name "ElastAlert" (ElastAlert, however, does because of their Apache 2 license). We do own copyright over the source code of this project, as stated in our BSD license, which means the copyright notice below and as stated in the BSD license should be included in (merged / changed) distributions of this project. The BSD license also states that making promotional content using 'BitSensor' is prohibited. However we hereby grant permission to anyone who wants to use the phrases 'BitSensor ElastAlert Plugin', 'BitSensor Software' or 'BitSensor Alerting' in promotional content. Phrases like 'We use BitSensor' or 'We use BitSensor security' when only using our ElastAlert Server are forbidden.
-
-## Copyright
-Copyright © 2018, BitSensor B.V.
-All rights reserved.
+## Contribution
+Please report any issues or suggestions you have on the [issues page](https://github.com/karql/elastalert2-server/issues).
