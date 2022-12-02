@@ -14,7 +14,7 @@ Check [Docker Hub](https://hub.docker.com/r/karql/elastalert2-server) for curren
 
 ## Historical background
 
-This project is fork of [bitsensor/elastalert](https://github.com/bitsensor/elastalert)
+This project is fork of [bitsensor/elastalert](https://github.com/bitsensor/elastalert) Copyright © 2019, BitSensor B.V.
 
 Official repository is not maintained anymore. Last commit was a long time ago. From that moment some things have changed a bit. 
 
