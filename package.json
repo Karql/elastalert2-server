@@ -13,7 +13,7 @@
     "test": "./test"
   },
   "dependencies": {
-    "@tsoa/runtime": "^4.1.3",
+    "@tsoa/runtime": "^5.0.0",
     "bunyan": "^1.8.15",
     "cors": "^2.8.5",
     "elasticsearch": "^16.7.3",
