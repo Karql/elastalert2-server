@@ -20,7 +20,7 @@
     "express": "^4.18.2",
     "joi": "^17.7.0",
     "lodash": "^4.17.21",
-    "mkdirp": "^1.0.4",
+    "mkdirp": "^2.1.2",
     "randomstring": "^1.2.3",
     "swagger-ui-express": "^4.6.0",
     "ws": "^8.12.0"
