@@ -1,5 +1,5 @@
-FROM alpine:3.16 as build-elastalert
-ARG ELASTALERT_VERSION=2.9.0
+FROM alpine:3.17 as build-elastalert
+ARG ELASTALERT_VERSION=2.10.0
 ENV ELASTALERT_VERSION=${ELASTALERT_VERSION}
 # URL from which to download ElastAlert 2.
 ARG ELASTALERT_URL=https://github.com/jertel/elastalert2/archive/refs/tags/$ELASTALERT_VERSION.zip
@@ -35,7 +35,7 @@ WORKDIR "${ELASTALERT_HOME}"
 # Install ElastAlert 2.
 RUN python3 setup.py install
 
-FROM node:16.18-alpine3.16 as build-server
+FROM node:16.19-alpine3.17 as build-server
 
 WORKDIR /opt/elastalert-server
 
@@ -45,7 +45,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:16.18-alpine3.16
+FROM node:16.19-alpine3.17
 
 LABEL description="ElastAlert2 Server"
 LABEL maintainer="Karql <karql.pl@gmail.com>"
@@ -53,8 +53,7 @@ LABEL maintainer="Karql <karql.pl@gmail.com>"
 # Set timezone for this container
 ENV TZ Etc/UTC
 
-RUN apk add --update --no-cache curl tzdata python3 make libmagic && \
-    ln -s /usr/bin/python3 /usr/bin/python
+RUN apk add --update --no-cache curl tzdata python3 make libmagic
 
 COPY --from=build-elastalert /usr/lib/python3.10/site-packages /usr/lib/python3.10/site-packages
 COPY --from=build-elastalert /opt/elastalert /opt/elastalert

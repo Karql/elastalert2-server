@@ -1,3 +1,12 @@
+## UPCOMMING
+
+### Changes
+
+* Update eleastalert2 to v2.10.0
+* Update build image to alpine:3.17
+* Update main image to node:16.19-alpine3.17
+* Update npm packages
+
 ## 5.0.0-next.11
 
 ### Changes
