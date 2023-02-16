@@ -1,4 +1,7 @@
-## UPCOMMING
+## 5.0.0
+
+It's time to finally release a stable version 😊
+There is still some work to be done but the main goal has been accomplished 🥳
 
 ### Changes
 
