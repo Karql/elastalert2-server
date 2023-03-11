@@ -23,7 +23,7 @@
     "mkdirp": "^2.1.5",
     "randomstring": "^1.2.3",
     "swagger-ui-express": "^4.6.2",
-    "ws": "^8.12.1"
+    "ws": "^8.13.0"
   },
   "devDependencies": {
     "@tsoa/cli": "^5.1.1",
