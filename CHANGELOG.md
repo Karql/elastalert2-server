@@ -1,3 +1,10 @@
+## UPCOMMING
+
+### Changes
+
+* Update eleastalert2 to v2.10.1
+* Update npm packages
+
 ## 5.0.0
 
 It's time to finally release a stable version 😊
