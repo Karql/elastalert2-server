@@ -1,11 +1,4 @@
 FROM alpine:3.17 as build-elastalert
-ARG ELASTALERT_VERSION=2.10.1
-ENV ELASTALERT_VERSION=${ELASTALERT_VERSION}
-# URL from which to download ElastAlert 2.
-ARG ELASTALERT_URL=https://github.com/jertel/elastalert2/archive/refs/tags/$ELASTALERT_VERSION.zip
-ENV ELASTALERT_URL=${ELASTALERT_URL}
-# ElastAlert 2 home directory full path.
-ENV ELASTALERT_HOME /opt/elastalert
 
 WORKDIR /opt
 
@@ -23,14 +16,28 @@ RUN apk add --update --no-cache \
     musl-dev \
     wget && \
     pip3 install --upgrade pip && \
-    pip3 install cryptography && \
-    # Download and unpack ElastAlert 2.
-    wget -O elastalert.zip "${ELASTALERT_URL}" && \
+    pip3 install cryptography
+
+ARG ELASTALERT_VERSION=2.10.1
+ENV ELASTALERT_VERSION=${ELASTALERT_VERSION}
+# URL from which to download ElastAlert 2.
+ARG ELASTALERT_URL=https://github.com/jertel/elastalert2/archive/refs/tags/$ELASTALERT_VERSION.zip
+ENV ELASTALERT_URL=${ELASTALERT_URL}
+# ElastAlert 2 home directory full path.
+ENV ELASTALERT_HOME /opt/elastalert
+
+# Download and unpack ElastAlert 2.
+RUN wget -O elastalert.zip "${ELASTALERT_URL}" && \
     unzip elastalert.zip && \
     rm elastalert.zip && \
     mv e* "${ELASTALERT_HOME}"
 
 WORKDIR "${ELASTALERT_HOME}"
+
+# RUN sed -i '/.*apscheduler.*/a aiohttp=3.8.4\n' requirements.txt
+# RUN sed -i "/.apscheduler.*/a\ \ \ \ \ \ \ \ 'aiohttp==3.8.4',\n" setup.py
+# RUN sed -i '/.*apscheduler.*/a rpds-py<0.7.1\n' requirements.txt
+# RUN sed -i "/.apscheduler.*/a\ \ \ \ \ \ \ \ 'rpds-py<0.7.1',\n" setup.py
 
 # Install ElastAlert 2.
 RUN python3 setup.py install
