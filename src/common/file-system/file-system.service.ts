@@ -1,6 +1,6 @@
 import fs, { read } from 'fs';
 import { join as joinPath } from 'path';
-import mkdirp from 'mkdirp';
+import { mkdirp } from 'mkdirp';
 import { DirectoryIndex } from './directory-index.model';
 
 export default class FileSystemService {
@@ -31,8 +31,8 @@ export default class FileSystemService {
   }
 
   /**
-   * 
-   * @param path 
+   *
+   * @param path
    * @returns Promise resolves to first directory made that had to be created, or undefined if everything already exists. Promise rejects if any errors are encountered. Note that, in the case of promise rejection, some directories may have been created, as recursive directory creation is not an atomic operation.
    */
   createDirectoryIfNotExists(path: string): Promise<string | unknown> {

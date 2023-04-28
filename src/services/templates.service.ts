@@ -1,5 +1,5 @@
 import { join as joinPath, normalize as normalizePath, extname as pathExtension } from 'path';
-import mkdirp from 'mkdirp';
+import { mkdirp } from 'mkdirp';
 import FileSystemService from '../common/file-system/file-system.service';
 import config from '../common/config';
 import Logger from '../common/logger';
