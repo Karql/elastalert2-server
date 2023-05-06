@@ -22,7 +22,7 @@
     "lodash": "^4.17.21",
     "mkdirp": "^3.0.1",
     "randomstring": "^1.2.3",
-    "swagger-ui-express": "^4.6.2",
+    "swagger-ui-express": "^4.6.3",
     "ws": "^8.13.0"
   },
   "devDependencies": {
