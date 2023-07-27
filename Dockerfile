@@ -47,8 +47,8 @@ RUN npm run build
 
 FROM arm64v8/node:16.19-alpine3.17
 
-LABEL description="ElastAlert2 Server"
-LABEL maintainer="Karql <karql.pl@gmail.com>"
+LABEL description="ElastAlert2 Server ARM64v8"
+LABEL maintainer="Karql <jagj77@hotmail.com>"
 
 # Set timezone for this container
 ENV TZ Etc/UTC
