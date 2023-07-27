@@ -1,4 +1,4 @@
-FROM alpine:3.17 as build-elastalert
+FROM arm64v8/alpine:3.17 as build-elastalert
 ARG ELASTALERT_VERSION=2.10.0
 ENV ELASTALERT_VERSION=${ELASTALERT_VERSION}
 # URL from which to download ElastAlert 2.
@@ -35,7 +35,7 @@ WORKDIR "${ELASTALERT_HOME}"
 # Install ElastAlert 2.
 RUN python3 setup.py install
 
-FROM node:16.19-alpine3.17 as build-server
+FROM arm64v8/node:16.19-alpine3.17 as build-server
 
 WORKDIR /opt/elastalert-server
 
@@ -45,7 +45,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:16.19-alpine3.17
+FROM arm64v8/node:16.19-alpine3.17
 
 LABEL description="ElastAlert2 Server"
 LABEL maintainer="Karql <karql.pl@gmail.com>"
