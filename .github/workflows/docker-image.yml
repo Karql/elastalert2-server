@@ -52,5 +52,5 @@ jobs:
         docker buildx build \
         --platform ${{ steps.prepare.outputs.docker_platform }} \
         --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} \
-        --file ./Dockerfile \
+        --file ./Dockerfile-buster \
         --output type=image,push=true .
