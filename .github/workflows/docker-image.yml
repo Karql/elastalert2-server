@@ -16,7 +16,7 @@ jobs:
       DOCKER_IMAGE: jagj77/elastalert2-server      
       DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}  
-      DOCKER_TARGET_PLATFORM: linux/arm64
+      DOCKER_TARGET_PLATFORM: linux/arm64,linux/amd64,linux/arm/v7,linux/arm/v6
       
     steps:
     - uses: actions/checkout@v3
