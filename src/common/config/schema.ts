@@ -3,10 +3,10 @@ import Joi from 'joi';
 
 const schema = Joi.object().keys({
   'appName': Joi.string().default('elastalert-server'),
-  'es_host': Joi.string().default('elastalert'),
-  'es_port': Joi.number().default(9200),
-  'es_username': Joi.string().default(''),
-  'es_password': Joi.string().default(''),
+  'es_host': Joi.string().default(process.env.ES_HOST ?? 'elastalert'),
+  'es_port': Joi.number().default(process.env.ES_PORT ?? 9200),
+  'es_username': Joi.string().default(process.env.ES_USERNAME ?? ''),
+  'es_password': Joi.string().default(process.env.ES_PASSWORD ?? ''),
   'es_ssl': Joi.boolean().default(false),
   'ea_verify_certs': Joi.boolean().default(false),
   'es_ca_certs': Joi.string().default(''),
