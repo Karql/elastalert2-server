@@ -1,5 +1,5 @@
-FROM alpine:3.17 as build-elastalert
-ARG ELASTALERT_VERSION=2.10.0
+FROM alpine:3.18 as build-elastalert
+ARG ELASTALERT_VERSION=2.13.2
 ENV ELASTALERT_VERSION=${ELASTALERT_VERSION}
 # URL from which to download ElastAlert 2.
 ARG ELASTALERT_URL=https://github.com/jertel/elastalert2/archive/refs/tags/$ELASTALERT_VERSION.zip
@@ -24,6 +24,7 @@ RUN apk add --update --no-cache \
     wget && \
     pip3 install --upgrade pip && \
     pip3 install cryptography && \
+    pip3 install setuptools==58.2.0 wheel && \
     # Download and unpack ElastAlert 2.
     wget -O elastalert.zip "${ELASTALERT_URL}" && \
     unzip elastalert.zip && \
@@ -33,9 +34,9 @@ RUN apk add --update --no-cache \
 WORKDIR "${ELASTALERT_HOME}"
 
 # Install ElastAlert 2.
-RUN python3 setup.py install
+RUN python3 setup.py sdist bdist_wheel
 
-FROM node:16.19-alpine3.17 as build-server
+FROM node:16.20.2-alpine3.18 as build-server
 
 WORKDIR /opt/elastalert-server
 
@@ -45,7 +46,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:16.19-alpine3.17
+FROM node:16.20.2-alpine3.18
 
 LABEL description="ElastAlert2 Server"
 LABEL maintainer="Karql <karql.pl@gmail.com>"
@@ -55,9 +56,10 @@ ENV TZ Etc/UTC
 
 RUN apk add --update --no-cache curl tzdata python3 make libmagic
 
-COPY --from=build-elastalert /usr/lib/python3.10/site-packages /usr/lib/python3.10/site-packages
+COPY --from=build-elastalert /usr/lib/python3.11/site-packages /usr/lib/python3.11/site-packages
 COPY --from=build-elastalert /opt/elastalert /opt/elastalert
-COPY --from=build-elastalert /usr/bin/elastalert* /usr/bin/
+# comment out. COPY failed: no source files were specified
+#COPY --from=build-elastalert /usr/bin/elastalert* /usr/bin/
 
 COPY --from=build-server /opt/elastalert-server/dist /opt/elastalert-server/dist
 
