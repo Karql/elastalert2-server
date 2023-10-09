@@ -1,3 +1,12 @@
+## 5.1.0
+
+### Changes
+* Update elastalert2 to v2.13.2 #81
+* Update build image to alpine:3.18
+* Update main image to node:18.18-alpine3.18 (node18 && python3.11) #83
+* Update npm packages
+* Improve building elastalert2 process
+
 ## 5.0.0
 
 It's time to finally release a stable version 😊

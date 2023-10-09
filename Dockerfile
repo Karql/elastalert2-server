@@ -1,5 +1,5 @@
-FROM alpine:3.17 as build-elastalert
-ARG ELASTALERT_VERSION=2.10.0
+FROM alpine:3.18 as build-elastalert
+ARG ELASTALERT_VERSION=2.13.2
 ENV ELASTALERT_VERSION=${ELASTALERT_VERSION}
 # URL from which to download ElastAlert 2.
 ARG ELASTALERT_URL=https://github.com/jertel/elastalert2/archive/refs/tags/$ELASTALERT_VERSION.zip
@@ -9,21 +9,11 @@ ENV ELASTALERT_HOME /opt/elastalert
 
 WORKDIR /opt
 
-RUN apk add --update --no-cache \
-    cargo ca-certificates \
-    openssl-dev \
-    openssl \
-    python3-dev \
+RUN apk add --update --no-cache \    
     python3 \
-    py3-pip \
-    py3-wheel \
-    py3-yaml \
-    libffi-dev \
-    gcc \
-    musl-dev \
+    py3-pip \    
     wget && \
-    pip3 install --upgrade pip && \
-    pip3 install cryptography && \
+    pip install setuptools wheel && \
     # Download and unpack ElastAlert 2.
     wget -O elastalert.zip "${ELASTALERT_URL}" && \
     unzip elastalert.zip && \
@@ -32,10 +22,13 @@ RUN apk add --update --no-cache \
 
 WORKDIR "${ELASTALERT_HOME}"
 
-# Install ElastAlert 2.
-RUN python3 setup.py install
+# Building ElastAlert 2.
+RUN python3 setup.py sdist bdist_wheel
 
-FROM node:16.19-alpine3.17 as build-server
+# Installing ElastAlert 2.
+RUN pip3 install dist/*.tar.gz
+
+FROM node:18.18-alpine3.18 as build-server
 
 WORKDIR /opt/elastalert-server
 
@@ -45,7 +38,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:16.19-alpine3.17
+FROM node:18.18-alpine3.18
 
 LABEL description="ElastAlert2 Server"
 LABEL maintainer="Karql <karql.pl@gmail.com>"
@@ -55,16 +48,16 @@ ENV TZ Etc/UTC
 
 RUN apk add --update --no-cache curl tzdata python3 make libmagic
 
-COPY --from=build-elastalert /usr/lib/python3.10/site-packages /usr/lib/python3.10/site-packages
-COPY --from=build-elastalert /opt/elastalert /opt/elastalert
+COPY --from=build-elastalert /usr/lib/python3.11/site-packages /usr/lib/python3.11/site-packages
 COPY --from=build-elastalert /usr/bin/elastalert* /usr/bin/
+RUN mkdir -p /opt/elastalert
 
 COPY --from=build-server /opt/elastalert-server/dist /opt/elastalert-server/dist
 
 WORKDIR /opt/elastalert-server
 
 COPY package*.json ./
-RUN npm ci --production
+RUN npm ci --omit=dev
 
 COPY scripts scripts
 
