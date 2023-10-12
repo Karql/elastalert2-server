@@ -1,3 +1,8 @@
+## 5.2.0
+
+### Changes
+* Update elastalert2 to v2.14.0 #84
+
 ## 5.1.0
 
 ### Changes

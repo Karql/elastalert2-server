@@ -1,5 +1,5 @@
 FROM alpine:3.18 as build-elastalert
-ARG ELASTALERT_VERSION=2.13.2
+ARG ELASTALERT_VERSION=2.14.0
 ENV ELASTALERT_VERSION=${ELASTALERT_VERSION}
 # URL from which to download ElastAlert 2.
 ARG ELASTALERT_URL=https://github.com/jertel/elastalert2/archive/refs/tags/$ELASTALERT_VERSION.zip
@@ -9,9 +9,9 @@ ENV ELASTALERT_HOME /opt/elastalert
 
 WORKDIR /opt
 
-RUN apk add --update --no-cache \    
+RUN apk add --update --no-cache \
     python3 \
-    py3-pip \    
+    py3-pip \
     wget && \
     pip install setuptools wheel && \
     # Download and unpack ElastAlert 2.
