@@ -34,7 +34,7 @@
     "@types/express-serve-static-core": "^4.17.39",
     "@types/lodash": "^4.14.200",
     "@types/mkdirp": "^1.0.2",
-    "@types/node": "^20.8.6",
+    "@types/node": "^20.8.8",
     "@types/randomstring": "^1.1.9",
     "@types/swagger-ui-express": "^4.1.4",
     "@types/ws": "^8.5.7",
