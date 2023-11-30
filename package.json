@@ -32,7 +32,7 @@
     "@types/elasticsearch": "^5.0.43",
     "@types/express": "^4.17.21",
     "@types/express-serve-static-core": "^4.17.41",
-    "@types/lodash": "^4.14.200",
+    "@types/lodash": "^4.14.202",
     "@types/mkdirp": "^1.0.2",
     "@types/node": "^20.8.9",
     "@types/randomstring": "^1.1.10",
