@@ -1,3 +1,9 @@
+## 5.3.0
+
+### Changes
+* Update elastalert2 to v2.15.0 #86
+* Update npm packages
+
 ## 5.2.0
 
 ### Changes
