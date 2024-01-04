@@ -1,10 +1,10 @@
-FROM alpine:3.18 as build-elastalert
+FROM alpine:3.19 as build-elastalert
 ARG ELASTALERT_VERSION=2.15.0
 ENV ELASTALERT_VERSION=${ELASTALERT_VERSION}
-# URL from which to download ElastAlert 2.
+# URL from which to download ElastAlert 2
 ARG ELASTALERT_URL=https://github.com/jertel/elastalert2/archive/refs/tags/$ELASTALERT_VERSION.zip
 ENV ELASTALERT_URL=${ELASTALERT_URL}
-# ElastAlert 2 home directory full path.
+# ElastAlert 2 home directory full path
 ENV ELASTALERT_HOME /opt/elastalert
 
 WORKDIR /opt
@@ -12,9 +12,10 @@ WORKDIR /opt
 RUN apk add --update --no-cache \
     python3 \
     py3-pip \
+    py3-setuptools \
+    py3-wheel \
     wget && \
-    pip install setuptools wheel && \
-    # Download and unpack ElastAlert 2.
+    # Download and unpack ElastAlert 2
     wget -O elastalert.zip "${ELASTALERT_URL}" && \
     unzip elastalert.zip && \
     rm elastalert.zip && \
@@ -22,11 +23,14 @@ RUN apk add --update --no-cache \
 
 WORKDIR "${ELASTALERT_HOME}"
 
-# Building ElastAlert 2.
+# Building ElastAlert 2
 RUN python3 setup.py sdist bdist_wheel
 
-# Installing ElastAlert 2.
-RUN pip3 install dist/*.tar.gz
+# Installing ElastAlert 2 in Virtual Environment
+RUN python3 -m venv /opt/elastalert2-venv && \
+    . /opt/elastalert2-venv/bin/activate && \
+    pip3 install dist/*.tar.gz && \
+    deactivate
 
 FROM node:18.18-alpine3.18 as build-server
 
@@ -38,7 +42,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:18.18-alpine3.18
+FROM node:18.19-alpine3.19
 
 LABEL description="ElastAlert2 Server"
 LABEL maintainer="Karql <karql.pl@gmail.com>"
@@ -46,10 +50,10 @@ LABEL maintainer="Karql <karql.pl@gmail.com>"
 # Set timezone for this container
 ENV TZ Etc/UTC
 
-RUN apk add --update --no-cache curl tzdata python3 make libmagic
+RUN apk add --update --no-cache tzdata python3
 
-COPY --from=build-elastalert /usr/lib/python3.11/site-packages /usr/lib/python3.11/site-packages
-COPY --from=build-elastalert /usr/bin/elastalert* /usr/bin/
+COPY --from=build-elastalert /opt/elastalert2-venv/lib/python3.11/site-packages /usr/lib/python3.11/site-packages
+COPY --from=build-elastalert /opt/elastalert2-venv/bin/elastalert* /usr/bin/
 RUN mkdir -p /opt/elastalert
 
 COPY --from=build-server /opt/elastalert-server/dist /opt/elastalert-server/dist

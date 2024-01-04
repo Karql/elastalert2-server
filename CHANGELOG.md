@@ -1,3 +1,12 @@
+## 5.4.0
+
+### Changes
+* Remove redundant packages from docker image #85
+* Updata .nvmrc #87
+* Update build image to alpine:3.19 #88
+* Update main image to node:18.19-alpine3.19 #88
+* Update npm packages
+
 ## 5.3.0
 
 ### Changes
