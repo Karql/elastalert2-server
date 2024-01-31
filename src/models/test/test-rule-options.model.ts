@@ -3,10 +3,10 @@ import { json } from "body-parser";
 export interface TestRuleOptions {
     /**
      * Can be either "all", "schemaOnly" or "countOnly".
-     * "all" will give the full console output. 
-     * "schemaOnly" will only validate the yaml config. 
+     * "all" will give the full console output.
+     * "schemaOnly" will only validate the yaml config.
      * "countOnly" will only find the number of matching documents and list available fields.
-     * @default all
+     * @default "all"
      */
     testType: "all" | "schemaOnly" | "countOnly";
     /**
@@ -36,7 +36,7 @@ export const TestRuleOptionsDefaults : TestRuleOptions = {
     testType: "all",
     days: 1,
     alert: false,
-    // format: null    
+    // format: null
     maxResults: 0
 }
 
