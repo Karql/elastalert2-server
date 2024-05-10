@@ -1,3 +1,10 @@
+## 5.7.0
+
+### Changes
+* Update elastalert2 to v2.18.0 #93
+* Update npm packages
+* Update docker images
+
 ## 5.6.0
 
 ### Changes
