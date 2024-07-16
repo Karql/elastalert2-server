@@ -1,3 +1,11 @@
+## 5.8.0
+
+### Changes
+* Update elastalert2 to v2.19.0 #94
+* Update npm packages
+* Update build image to alpine:3.20
+* Update main image to node:22.4-alpine3.20
+
 ## 5.7.0
 
 ### Changes
