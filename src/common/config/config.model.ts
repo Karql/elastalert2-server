@@ -23,6 +23,7 @@ export interface Config {
     verbose: boolean;
     es_debug: boolean;
     debug: boolean;
+    prometheus_port: number;
     rulesPath: ConfigPath;
     templatesPath: ConfigPath;
     dataPath: ConfigPath;

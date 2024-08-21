@@ -103,6 +103,11 @@ export default class ProcessService {
       startArguments.push('--es_debug');
     }
 
+    if (cfg.prometheus_port != null && cfg.prometheus_port > 0) {
+      logger.info(`Setting ElastAlert prometheus_port to ${cfg.prometheus_port}. This will expose ElastAlert 2 Prometheus metrics on the specified port.`);
+      startArguments.push('--prometheus_port', cfg.prometheus_port.toString());
+    }
+
     logger.info('Starting elastalert with arguments ' + (startArguments.join(' ') || '[none]'));
 
     this._process = spawn('python', ['-m', 'elastalert.elastalert'].concat(startArguments), {
