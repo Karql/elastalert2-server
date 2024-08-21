@@ -21,6 +21,7 @@ const schema = Joi.object().keys({
   'verbose': Joi.boolean().default(false),
   'es_debug': Joi.boolean().default(false),
   'debug': Joi.boolean().default(false),
+  'prometheus_port': Joi.number().default(null),
   'rulesPath': Joi.object().keys({
     'relative': Joi.boolean().default(true),
     'path': Joi.string().default('/rules')

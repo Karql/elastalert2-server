@@ -83,7 +83,8 @@ docker build --build-arg ELASTALERT_URL=http://example.mirror.com/master.zip -t 
 ```
 
 ## Configuration
-In `config/config.example.json` you'll find the default config. You can make a `config.json` file in the same folder that overrides the default config. When forking this repository it is recommended to remove `config.json` from the `.gitignore` file. For local testing purposes you can then use a `config.dev.json` file which overrides `config.json`.
+The configuration is located in the `config/config.json` file. 
+For local testing purposes you can then use a `config/config.dev.json` file which overrides `config/config.json`.
 
 You can use the following config options:
 
@@ -98,6 +99,7 @@ You can use the following config options:
   "verbose": true, // Optional, will increase the logging verboseness, which allows you to see information about the state of queries.
   "es_debug": true, // Optional, will enable logging for all queries made to Elasticsearch
   "debug": false, // Will run ElastAlert2 in debug mode. This will increase the logging verboseness, change all alerts to DebugAlerter, which prints alerts and suppresses their normal action, and skips writing search and alert metadata back to Elasticsearch.
+  "prometheus_port": 9979, // Will expose ElastAlert 2 Prometheus metrics on the specified port 
   "rulesPath": { // The path to the rules folder containing all the rules. If the folder is empty a dummy file will be created to allow ElastAlert2 to start.
     "relative": true, // Whether to use a path relative to the `elastalert2 Path` folder.
     "path": "/rules" // The path to the rules folder. 
