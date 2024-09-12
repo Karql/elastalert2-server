@@ -41,7 +41,7 @@
     "concurrently": "^9.0.1",
     "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.3"
+    "typescript": "^5.6.2"
   },
   "scripts": {
     "dev": "concurrently \"nodemon\" \"nodemon --config nodemon-spec.json\"",
