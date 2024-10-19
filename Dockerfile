@@ -1,5 +1,5 @@
 FROM alpine:3.20 as build-elastalert
-ARG ELASTALERT_VERSION=2.19.0
+ARG ELASTALERT_VERSION=2.20.0
 ENV ELASTALERT_VERSION=${ELASTALERT_VERSION}
 # URL from which to download ElastAlert 2
 ARG ELASTALERT_URL=https://github.com/jertel/elastalert2/archive/refs/tags/$ELASTALERT_VERSION.zip
@@ -32,7 +32,7 @@ RUN python3 -m venv /opt/elastalert2-venv && \
     pip3 install dist/*.tar.gz && \
     deactivate
 
-FROM node:22.4-alpine3.20 as build-server
+FROM node:22.10-alpine3.20 as build-server
 
 WORKDIR /opt/elastalert-server
 
@@ -42,7 +42,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:22.4-alpine3.20
+FROM node:22.10-alpine3.20
 
 LABEL description="ElastAlert2 Server"
 LABEL maintainer="Karql <karql.pl@gmail.com>"
