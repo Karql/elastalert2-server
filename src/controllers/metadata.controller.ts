@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Query, Route, Tags } from "@tsoa/runtime";
+import { Body, Controller, Get, Path, Query, Route, Tags } from "@tsoa/runtime";
 import { getClient } from "../common/elasticsearch_client";
 import config from '../common/config';
 
@@ -46,7 +46,7 @@ function getQueryString(type: "elastalert_status" | "elastalert" | "elastalert_e
 @Tags("metadata")
 export class MetadataController extends Controller {
     @Get("{type}")
-    public async getMetadata(@Route("type") type: "elastalert_status" | "elastalert" | "elastalert_error" | "silence", 
+    public async getMetadata(@Path("type") type: "elastalert_status" | "elastalert" | "elastalert_error" | "silence", 
         @Query("from") from?: number,
         @Query("size") size?: number,
         @Query("rule_name") rule_name?: string): Promise<any> {

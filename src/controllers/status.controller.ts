@@ -1,4 +1,4 @@
-import { Controller, Get, Route, Request, Tags } from "@tsoa/runtime";
+import { Controller, Get, Route, Request, Tags, Path } from "@tsoa/runtime";
 import { Request as ExpressRequest } from 'express';
 
 import {Status} from '../common/status.model';
@@ -26,7 +26,7 @@ export class StatusController extends Controller {
     }
 
     @Get("control/{action}")
-    public async control(@Request() request: ExpressRequest, @Route() action: "start" | "stop"): Promise<StatusControlResponse> {
+    public async control(@Request() request: ExpressRequest, @Path("action") action: "start" | "stop"): Promise<StatusControlResponse> {
         let server: ElastalertServer = request.app.get('server');
 
         let success = false;

@@ -1,4 +1,4 @@
-import { Controller, Get, Route, Request, Tags, Post, Body, Delete } from "@tsoa/runtime";
+import { Controller, Get, Route, Request, Tags, Post, Body, Delete, Path } from "@tsoa/runtime";
 import { Request as ExRequest } from 'express';
 
 import ElastalertServer from '../elastalert_server';
@@ -31,7 +31,7 @@ export class RulesController extends Controller {
     }
 
     @Get("{id}")
-    public async getRule(@Request() request: ExRequest, @Route("id") id: string): Promise<string> {
+    public async getRule(@Request() request: ExRequest, @Path("id") id: string): Promise<string> {
         let server: ElastalertServer = request.app.get('server');        
         let rulesService = server.rulesService;
         
@@ -42,7 +42,7 @@ export class RulesController extends Controller {
 
     // TODO: split to POST and PUT
     @Post("{id}")
-    public async addRule(@Request() request: ExRequest, @Route("id") id: string, @Body() body: RulesAddRulePayload): Promise<RulesAddResponse> {
+    public async addRule(@Request() request: ExRequest, @Path("id") id: string, @Body() body: RulesAddRulePayload): Promise<RulesAddResponse> {
         let server: ElastalertServer = request.app.get('server');
         let rulesService = server.rulesService;
 
@@ -71,7 +71,7 @@ export class RulesController extends Controller {
     }
 
     @Delete("{id}")
-    public async deleteRule(@Request() request: ExRequest, @Route("id") id: string): Promise<void> {
+    public async deleteRule(@Request() request: ExRequest, @Path("id") id: string): Promise<void> {
         let server: ElastalertServer = request.app.get('server');        
         let rulesService = server.rulesService;
         

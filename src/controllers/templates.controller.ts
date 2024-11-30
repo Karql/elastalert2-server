@@ -1,4 +1,4 @@
-import { Controller, Get, Route, Request, Tags, Post, Body, Delete } from "@tsoa/runtime";
+import { Controller, Get, Route, Request, Tags, Post, Body, Delete, Path } from "@tsoa/runtime";
 import { Request as ExRequest } from 'express';
 
 import ElastalertServer from '../elastalert_server';
@@ -31,7 +31,7 @@ export class TemplatesController extends Controller {
     }
 
     @Get("{id}")
-    public async getTemplate(@Request() request: ExRequest, @Route("id") id: string): Promise<string> {
+    public async getTemplate(@Request() request: ExRequest, @Path("id") id: string): Promise<string> {
         let server: ElastalertServer = request.app.get('server');        
         let templatesService = server.templatesService;
         
@@ -42,7 +42,7 @@ export class TemplatesController extends Controller {
 
     // TODO: split to POST and PUT
     @Post("{id}")
-    public async addTemplate(@Request() request: ExRequest, @Route("id") id: string, @Body() body: TemplatesAddTemplatePayload): Promise<TempatesAddResponse> {
+    public async addTemplate(@Request() request: ExRequest, @Path("id") id: string, @Body() body: TemplatesAddTemplatePayload): Promise<TempatesAddResponse> {
         let server: ElastalertServer = request.app.get('server');
         let templatesService = server.templatesService;
 
@@ -71,7 +71,7 @@ export class TemplatesController extends Controller {
     }
 
     @Delete("{id}")
-    public async deleteTemplate(@Request() request: ExRequest, @Route("id") id: string): Promise<void> {
+    public async deleteTemplate(@Request() request: ExRequest, @Path("id") id: string): Promise<void> {
         let server: ElastalertServer = request.app.get('server');        
         let templatesService = server.templatesService;
         

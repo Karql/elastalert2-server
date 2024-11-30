@@ -1,11 +1,11 @@
-import { Body, Controller, Post, Route, Tags } from "@tsoa/runtime";
+import { Body, Controller, Path, Post, Route, Tags } from "@tsoa/runtime";
 import { getClient } from "../common/elasticsearch_client";
 
 @Route("/search")
 @Tags("search")
 export class SearchController extends Controller {
     @Post("{index}")
-    public async postSearch(@Route("index") index: string, @Body() body?: any): Promise<any> {
+    public async postSearch(@Path("index") index: string, @Body() body?: any): Promise<any> {
         let client = getClient();
 
         try {
