@@ -39,7 +39,7 @@
     "@types/swagger-ui-express": "^4.1.7",
     "@types/ws": "^8.5.13",
     "concurrently": "^9.1.0",
-    "nodemon": "^3.1.7",
+    "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
   },
