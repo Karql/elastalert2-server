@@ -140,19 +140,19 @@ export function RegisterRoutes(app: Router) {
 
 
     
+        const argsDefaultController_index: Record<string, TsoaRoute.ParameterSchema> = {
+        };
         app.get('/',
             ...(fetchMiddlewares<RequestHandler>(DefaultController)),
             ...(fetchMiddlewares<RequestHandler>(DefaultController.prototype.index)),
 
             async function DefaultController_index(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-            };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsDefaultController_index, request, response });
 
                 const controller = new DefaultController();
 
@@ -169,20 +169,20 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsMappingController_getMapping: Record<string, TsoaRoute.ParameterSchema> = {
+                index: {"in":"path","name":"index","required":true,"dataType":"string"},
+        };
         app.get('/mapping/:index',
             ...(fetchMiddlewares<RequestHandler>(MappingController)),
             ...(fetchMiddlewares<RequestHandler>(MappingController.prototype.getMapping)),
 
             async function MappingController_getMapping(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    index: {"in":"path","name":"index","required":true,"dataType":"string"},
-            };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsMappingController_getMapping, request, response });
 
                 const controller = new MappingController();
 
@@ -199,23 +199,23 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsMetadataController_getMetadata: Record<string, TsoaRoute.ParameterSchema> = {
+                type: {"in":"path","name":"type","required":true,"dataType":"union","subSchemas":[{"dataType":"enum","enums":["elastalert_status"]},{"dataType":"enum","enums":["elastalert"]},{"dataType":"enum","enums":["elastalert_error"]},{"dataType":"enum","enums":["silence"]}]},
+                from: {"in":"query","name":"from","dataType":"double"},
+                size: {"in":"query","name":"size","dataType":"double"},
+                rule_name: {"in":"query","name":"rule_name","dataType":"string"},
+        };
         app.get('/metadata/:type',
             ...(fetchMiddlewares<RequestHandler>(MetadataController)),
             ...(fetchMiddlewares<RequestHandler>(MetadataController.prototype.getMetadata)),
 
             async function MetadataController_getMetadata(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    type: {"in":"path","name":"type","required":true,"dataType":"union","subSchemas":[{"dataType":"enum","enums":["elastalert_status"]},{"dataType":"enum","enums":["elastalert"]},{"dataType":"enum","enums":["elastalert_error"]},{"dataType":"enum","enums":["silence"]}]},
-                    from: {"in":"query","name":"from","dataType":"double"},
-                    size: {"in":"query","name":"size","dataType":"double"},
-                    rule_name: {"in":"query","name":"rule_name","dataType":"string"},
-            };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsMetadataController_getMetadata, request, response });
 
                 const controller = new MetadataController();
 
@@ -232,20 +232,20 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsStatusController_index: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+        };
         app.get('/status',
             ...(fetchMiddlewares<RequestHandler>(StatusController)),
             ...(fetchMiddlewares<RequestHandler>(StatusController.prototype.index)),
 
             async function StatusController_index(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-            };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsStatusController_index, request, response });
 
                 const controller = new StatusController();
 
@@ -262,21 +262,21 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsStatusController_control: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                action: {"in":"path","name":"action","required":true,"dataType":"union","subSchemas":[{"dataType":"enum","enums":["start"]},{"dataType":"enum","enums":["stop"]}]},
+        };
         app.get('/status/control/:action',
             ...(fetchMiddlewares<RequestHandler>(StatusController)),
             ...(fetchMiddlewares<RequestHandler>(StatusController.prototype.control)),
 
             async function StatusController_control(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    action: {"in":"path","name":"action","required":true,"dataType":"union","subSchemas":[{"dataType":"enum","enums":["start"]},{"dataType":"enum","enums":["stop"]}]},
-            };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsStatusController_control, request, response });
 
                 const controller = new StatusController();
 
@@ -293,20 +293,20 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsTemplatesController_getTemplates: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+        };
         app.get('/templates',
             ...(fetchMiddlewares<RequestHandler>(TemplatesController)),
             ...(fetchMiddlewares<RequestHandler>(TemplatesController.prototype.getTemplates)),
 
             async function TemplatesController_getTemplates(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-            };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsTemplatesController_getTemplates, request, response });
 
                 const controller = new TemplatesController();
 
@@ -323,21 +323,21 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsTemplatesController_getTemplate: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        };
         app.get('/templates/:id',
             ...(fetchMiddlewares<RequestHandler>(TemplatesController)),
             ...(fetchMiddlewares<RequestHandler>(TemplatesController.prototype.getTemplate)),
 
             async function TemplatesController_getTemplate(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
-            };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsTemplatesController_getTemplate, request, response });
 
                 const controller = new TemplatesController();
 
@@ -354,22 +354,22 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsTemplatesController_addTemplate: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","required":true,"ref":"TemplatesAddTemplatePayload"},
+        };
         app.post('/templates/:id',
             ...(fetchMiddlewares<RequestHandler>(TemplatesController)),
             ...(fetchMiddlewares<RequestHandler>(TemplatesController.prototype.addTemplate)),
 
             async function TemplatesController_addTemplate(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
-                    body: {"in":"body","name":"body","required":true,"ref":"TemplatesAddTemplatePayload"},
-            };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsTemplatesController_addTemplate, request, response });
 
                 const controller = new TemplatesController();
 
@@ -386,21 +386,21 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsTemplatesController_deleteTemplate: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        };
         app.delete('/templates/:id',
             ...(fetchMiddlewares<RequestHandler>(TemplatesController)),
             ...(fetchMiddlewares<RequestHandler>(TemplatesController.prototype.deleteTemplate)),
 
             async function TemplatesController_deleteTemplate(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
-            };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsTemplatesController_deleteTemplate, request, response });
 
                 const controller = new TemplatesController();
 
@@ -417,21 +417,21 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsSearchController_postSearch: Record<string, TsoaRoute.ParameterSchema> = {
+                index: {"in":"path","name":"index","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","dataType":"any"},
+        };
         app.post('/search/:index',
             ...(fetchMiddlewares<RequestHandler>(SearchController)),
             ...(fetchMiddlewares<RequestHandler>(SearchController.prototype.postSearch)),
 
             async function SearchController_postSearch(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    index: {"in":"path","name":"index","required":true,"dataType":"string"},
-                    body: {"in":"body","name":"body","dataType":"any"},
-            };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsSearchController_postSearch, request, response });
 
                 const controller = new SearchController();
 
@@ -448,20 +448,20 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsRulesController_getRules: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+        };
         app.get('/rules',
             ...(fetchMiddlewares<RequestHandler>(RulesController)),
             ...(fetchMiddlewares<RequestHandler>(RulesController.prototype.getRules)),
 
             async function RulesController_getRules(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-            };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsRulesController_getRules, request, response });
 
                 const controller = new RulesController();
 
@@ -478,21 +478,21 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsRulesController_getRule: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        };
         app.get('/rules/:id',
             ...(fetchMiddlewares<RequestHandler>(RulesController)),
             ...(fetchMiddlewares<RequestHandler>(RulesController.prototype.getRule)),
 
             async function RulesController_getRule(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
-            };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsRulesController_getRule, request, response });
 
                 const controller = new RulesController();
 
@@ -509,22 +509,22 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsRulesController_addRule: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","required":true,"ref":"RulesAddRulePayload"},
+        };
         app.post('/rules/:id',
             ...(fetchMiddlewares<RequestHandler>(RulesController)),
             ...(fetchMiddlewares<RequestHandler>(RulesController.prototype.addRule)),
 
             async function RulesController_addRule(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
-                    body: {"in":"body","name":"body","required":true,"ref":"RulesAddRulePayload"},
-            };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsRulesController_addRule, request, response });
 
                 const controller = new RulesController();
 
@@ -541,21 +541,21 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsRulesController_deleteRule: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        };
         app.delete('/rules/:id',
             ...(fetchMiddlewares<RequestHandler>(RulesController)),
             ...(fetchMiddlewares<RequestHandler>(RulesController.prototype.deleteRule)),
 
             async function RulesController_deleteRule(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
-            };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsRulesController_deleteRule, request, response });
 
                 const controller = new RulesController();
 
@@ -572,21 +572,21 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsTestController_testRule: Record<string, TsoaRoute.ParameterSchema> = {
+                body: {"in":"body","name":"body","required":true,"ref":"TestRulePayload"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+        };
         app.post('/test',
             ...(fetchMiddlewares<RequestHandler>(TestController)),
             ...(fetchMiddlewares<RequestHandler>(TestController.prototype.testRule)),
 
             async function TestController_testRule(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    body: {"in":"body","name":"body","required":true,"ref":"TestRulePayload"},
-                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
-            };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             let validatedArgs: any[] = [];
             try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+                validatedArgs = templateService.getValidatedArgs({ args: argsTestController_testRule, request, response });
 
                 const controller = new TestController();
 
