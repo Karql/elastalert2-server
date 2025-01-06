@@ -1,3 +1,14 @@
+## 5.12.0
+
+### Changes
+* Improve wss initalization #99
+* Improve closing application in docker #100
+* Update npm packages
+
+### Breaking changes
+
+* Change logs format from short to structured #100
+
 ## 5.11.0
 
 ### Changes

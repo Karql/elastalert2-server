@@ -1,6 +1,6 @@
 {
   "name": "elastalert2-server",
-  "version": "5.11.0",
+  "version": "5.12.0",
   "description": "A server that runs ElastAlert2 and exposes REST API's for manipulating rules and alerts.",
   "license": "MIT",
   "main": "index.js",
@@ -45,7 +45,7 @@
   "scripts": {
     "dev": "concurrently \"nodemon\" \"nodemon --config nodemon-spec.json\"",
     "build": "tsoa spec-and-routes && tsc",
-    "start": "sh ./scripts/start.sh",
+    "start": "node dist/index.js",
     "serve": "nodemon --inspect --watch dist/ -d 1 ./dist/index.js",
     "tsc:watch": "tsc -w",
     "tsc:build": "tsc"

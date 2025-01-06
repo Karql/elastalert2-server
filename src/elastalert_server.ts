@@ -1,6 +1,7 @@
 import express, { Express,   Response as ExResponse,
   Request as ExRequest,
   NextFunction,} from 'express';
+import WebSocket from 'ws';
 import bodyParser from 'body-parser';
 import Logger from './common/logger';
 import config from './common/config';
@@ -22,6 +23,7 @@ let logger = new Logger('Server');
 
 export default class ElastalertServer {
   private _express: Express;
+  private _wss?: WebSocket.Server;
   private _runningTimeouts: NodeJS.Timeout[];
 
   private _processService: ProcessService;
@@ -48,6 +50,12 @@ export default class ElastalertServer {
 
     // Set listener on process exit (SIGINT == ^C)
     process.on('SIGINT', () => {
+      logger.info('Received signal: SIGINT');
+      process.exit(0);
+    });
+
+    process.on('SIGTERM', () => {
+      logger.info('Received signal: SIGTERM');
       process.exit(0);
     });
 
@@ -147,9 +155,9 @@ export default class ElastalertServer {
 
       logger.info('Server listening on port ' + config.get().port);
 
-      let wss = listen(config.get().wsport);
+      self._wss = listen(config.get().wsport);
 
-      wss.on('connection', (ws) => {
+      self._wss.on('connection', (ws) => {
         ws.on('message', (message) => {
           try {
             let data = JSON.parse(message.toString());
@@ -176,6 +184,7 @@ export default class ElastalertServer {
   stop() {
     this._processService?.stop();
     this._runningServer?.close();
+    this._wss?.close();
 
     this._runningTimeouts.forEach((timeout) => clearTimeout(timeout));
   }

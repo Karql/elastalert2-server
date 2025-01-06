@@ -66,8 +66,6 @@ WORKDIR /opt/elastalert-server
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-COPY scripts scripts
-
 COPY config/elastalert.yaml /opt/elastalert/config.yaml
 COPY config/elastalert-test.yaml /opt/elastalert/config-test.yaml
 COPY config/config.json config/config.json
@@ -82,4 +80,4 @@ RUN mkdir -p /opt/elastalert/rules/ /opt/elastalert/server_data/tests/ \
 USER node
 
 EXPOSE 3030
-ENTRYPOINT ["npm", "start"]
+CMD ["node", "dist/index.js"]
