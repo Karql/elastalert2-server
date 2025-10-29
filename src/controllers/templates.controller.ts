@@ -59,7 +59,7 @@ export class TemplatesController extends Controller {
 
         catch (error) {
             if (error instanceof TemplateNotFoundError) {
-                templatesService.createTemplate(id, body.yaml);
+                await templatesService.createTemplate(id, body.yaml);
                 return {
                     created: true,
                     id: request.params.id

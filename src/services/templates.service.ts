@@ -34,7 +34,8 @@ export default class TemplatesService {
     }
     catch (error) {
       // Check if the requested folder is the templates root folder
-      if (normalizePath(self.templatesFolder) === fullPath) {
+      if (normalizePath(self.templatesFolder) === fullPath
+          && !this.fileSystemController.directoryExists(fullPath)) {
         // Try to create the root folder
         try {
           await mkdirp(fullPath);

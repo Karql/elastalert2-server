@@ -1,3 +1,8 @@
+## 5.17.1
+
+### Bug fixes
+* Improve handling invalid file system permissions #103
+
 ## 5.17.0
 
 ### Changes

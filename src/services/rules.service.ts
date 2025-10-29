@@ -34,7 +34,8 @@ export default class RulesService {
     }
     catch (error) {
       // Check if the requested folder is the rules root folder
-      if (normalizePath(self.rulesFolder) === fullPath) {
+      if (normalizePath(self.rulesFolder) === fullPath
+          && !this.fileSystemController.directoryExists(fullPath)) {
         // Try to create the root folder
         try {
           await mkdirp(fullPath);

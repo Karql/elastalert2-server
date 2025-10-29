@@ -59,7 +59,7 @@ export class RulesController extends Controller {
 
         catch (error) {
             if (error instanceof RuleNotFoundError) {
-                rulesService.createRule(id, body.yaml);
+                await rulesService.createRule(id, body.yaml);
                 return {
                     created: true,
                     id: request.params.id

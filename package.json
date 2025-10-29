@@ -1,6 +1,6 @@
 {
   "name": "elastalert2-server",
-  "version": "5.17.0",
+  "version": "5.17.1",
   "description": "A server that runs ElastAlert2 and exposes REST API's for manipulating rules and alerts.",
   "license": "MIT",
   "main": "index.js",
