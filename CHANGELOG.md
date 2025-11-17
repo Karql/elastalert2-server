@@ -1,3 +1,9 @@
+## 5.18.0
+
+### Changes
+* Update elastalert2 to v2.27.0 #105
+* Update npm packages
+
 ## 5.17.1
 
 ### Bug fixes
