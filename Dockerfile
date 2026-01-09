@@ -1,4 +1,4 @@
-FROM alpine:3.22 as build-elastalert
+FROM alpine:3.23 as build-elastalert
 ARG ELASTALERT_VERSION=2.27.0
 ENV ELASTALERT_VERSION=${ELASTALERT_VERSION}
 # URL from which to download ElastAlert 2
