@@ -1,6 +1,7 @@
 ## UPCOMMING
 
 * Update npm packages
+* Update build image to alpine:3.23
 
 ## 5.18.0
 
