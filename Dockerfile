@@ -32,7 +32,7 @@ RUN python3 -m venv /opt/elastalert2-venv && \
     pip3 install dist/*.tar.gz && \
     deactivate
 
-FROM node:24.10-alpine3.22 as build-server
+FROM node:24.12-alpine3.23 as build-server
 
 WORKDIR /opt/elastalert-server
 
@@ -42,7 +42,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:24.10-alpine3.22
+FROM node:24.12-alpine3.23
 
 LABEL description="ElastAlert2 Server"
 LABEL maintainer="Karql <karql.pl@gmail.com>"
