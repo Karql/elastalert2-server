@@ -1,3 +1,8 @@
+## 5.20.0
+
+* Update elastalert2 to v2.29.0 #107
+* Update main image to node:24.14-alpine3.23
+
 ## 5.19.0
 
 * Update elastalert2 to v2.28.0 #106
