@@ -15,7 +15,7 @@
   "dependencies": {
     "@tsoa/runtime": "^6.6.0",
     "bunyan": "^1.8.15",
-    "cors": "^2.8.5",
+    "cors": "^2.8.6",
     "elasticsearch": "^16.7.3",
     "express": "^4.22.1",
     "joi": "^18.0.2",
