@@ -42,6 +42,10 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
+  "overrides": {
+    "brace-expansion": "^5.0.8",
+    "ts-deepmerge": "^8.0.0"
+  },
   "scripts": {
     "dev": "concurrently \"nodemon\" \"nodemon --config nodemon-spec.json\"",
     "build": "tsoa spec-and-routes && tsc",
