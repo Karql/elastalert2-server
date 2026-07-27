@@ -1,3 +1,8 @@
+## 5.22.0
+
+* Update elastalert2 to v2.31.0 #109
+* Update npm packages
+
 ## 5.21.0
 
 * Update elastalert2 to v2.30.0 #108
