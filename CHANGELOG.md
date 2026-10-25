@@ -1,3 +1,9 @@
+## 5.23.0
+
+### Changes
+* Update npm packages
+* Update main image to node:26.12.1-alpine3.24 (fixes CVE-2026-111497)
+
 ## 5.22.0
 
 ### Changes
