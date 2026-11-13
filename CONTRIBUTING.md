@@ -56,24 +56,57 @@ Once that's done, just run:
 npm run test && npm run build
 ```
 
+### Project structure
+The code is organized by feature. Everything that belongs to one API area (routes, Zod schemas, service, errors) is in its own folder under `src/modules/`. Infrastructure shared by all modules is in `src/shared/`.
+
+```
+src/
+  index.ts              entry point: loads config, starts the server
+  server.ts             ElastalertServer: HTTP server, test websocket, ElastAlert process lifecycle
+  app.ts                Hono app: middleware, module routes, OpenAPI spec, Swagger UI, error handling
+  modules/
+    info/               GET /
+    status/             /status, ElastAlert process (process.service.ts)
+    rules/              /rules
+    templates/          /templates
+    test/               POST /test and the /test websocket (test.ws.ts)
+    elasticsearch/      /mapping, /metadata, /search and the Elasticsearch client
+  shared/
+    config/             config.json schema (Zod) and ConfigService
+    errors/             RequestError (Problem Details, RFC 9457), ValidationError
+    http/               OpenAPI helpers and the Hono env type
+    logger/  file-system/
+```
+
+File names use kebab-case with a role suffix: `*.routes.ts`, `*.schemas.ts`, `*.service.ts`, `*.errors.ts`.
+
 ### Writing a new API (route)
 The HTTP layer uses [Hono](https://hono.dev) with [@hono/zod-openapi](https://github.com/honojs/middleware/tree/main/packages/zod-openapi). A Zod schema describes each request and response. The same schema validates the request at runtime and generates the OpenAPI spec served at `/swagger.json`.
 
-1. Add a file in `src/routes/` (e.g. `example.routes.ts`):
+1. Create a module folder, e.g. `src/modules/example/`, with the schemas in `example.schemas.ts`:
 
     ```typescript
-    import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi';
-    import type { AppEnv } from '../app-env';
-    import { errorResponses, json, pathParam } from './openapi';
+    import { z } from '@hono/zod-openapi';
+    import { pathParam } from '../../shared/http/openapi';
 
-    const ExampleResponse = z.object({ id: z.string() }).openapi('ExampleResponse');
+    export const ExampleParams = z.object({ id: pathParam('id') });
+    export const ExampleResponse = z.object({ id: z.string() }).openapi('ExampleResponse');
+    ```
+
+2. Add the routes in `example.routes.ts`:
+
+    ```typescript
+    import { OpenAPIHono, createRoute } from '@hono/zod-openapi';
+    import type { AppEnv } from '../../shared/http/app-env';
+    import { errorResponses, json } from '../../shared/http/openapi';
+    import { ExampleParams, ExampleResponse } from './example.schemas';
 
     const getExample = createRoute({
       method: 'get',
       path: '/{id}',
       tags: ['example'],
       operationId: 'GetExample',
-      request: { params: z.object({ id: pathParam('id') }) },
+      request: { params: ExampleParams },
       responses: {
         200: json(ExampleResponse, 'Example'),
         ...errorResponses,
@@ -88,16 +121,16 @@ The HTTP layer uses [Hono](https://hono.dev) with [@hono/zod-openapi](https://gi
       });
     ```
 
-2. Mount it in `src/app.ts`: `app.route('/example', exampleRoutes);`
+3. Mount it in `src/app.ts`: `app.route('/example', exampleRoutes);`
 
-Keep handlers thin and put the logic in a service in `src/services/`. Throw a `RequestError` subclass (`src/common/errors/`) to return an error with a specific status code. Validation errors are handled globally.
+Keep handlers thin and put the logic in `example.service.ts`. To return an error, throw a `RequestError` subclass from `example.errors.ts`. It is sent as Problem Details (`application/problem+json`). Validation errors (422) are handled globally.
 
 ### Contributing checklist
 1. **Did you [run the tests & builds as shown above](#testing-and-building) and [make sure it follows the styleguide](#linting)?**
 2. **If you made a new feature, did you think about making it configurable?**
       
       Always make sure the feature can be ran on any environment by providing config options for environment specific settings. 
-    > If you add a config option, check that you add it in the [config schema](../src/common/config/schema.js), the [config example](../config/config.example.json) and the [config section in readme](../README.md#config).
+    > If you add a config option, check that you add it in the [config schema](../src/shared/config/config.schema.ts), the [config example](../config/config.example.json) and the [config section in readme](../README.md#config).
 3. **Did you make sure you saved all your dependencies with `npm install [packageName] --save`?**
 4. **Did you write tests for the code you wrote?**
     > If you have any questions about writing tests, let us know by sending an e-mail to [dev@bitsensor.io](mailto:dev@bitsensor.io).

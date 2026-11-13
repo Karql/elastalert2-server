@@ -6,21 +6,21 @@ import { cors } from 'hono/cors';
 import { HTTPException } from 'hono/http-exception';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 
-import type { AppEnv } from './app-env';
-import type ElastalertServer from './elastalert_server';
-import Logger from './common/logger';
-import RequestError, { HttpError, PROBLEM_CONTENT_TYPE } from './common/errors/request_error';
-import { ValidationError } from './common/errors/http_request_errors';
-import { defaultRoutes } from './routes/default.routes';
-import { mappingRoutes } from './routes/mapping.routes';
-import { metadataRoutes } from './routes/metadata.routes';
-import { rulesRoutes } from './routes/rules.routes';
-import { searchRoutes } from './routes/search.routes';
-import { statusRoutes } from './routes/status.routes';
-import { templatesRoutes } from './routes/templates.routes';
-import { testRoutes } from './routes/test.routes';
+import { mappingRoutes } from './modules/elasticsearch/mapping.routes';
+import { metadataRoutes } from './modules/elasticsearch/metadata.routes';
+import { searchRoutes } from './modules/elasticsearch/search.routes';
+import { infoRoutes } from './modules/info/info.routes';
+import { rulesRoutes } from './modules/rules/rules.routes';
+import { statusRoutes } from './modules/status/status.routes';
+import { templatesRoutes } from './modules/templates/templates.routes';
+import { testRoutes } from './modules/test/test.routes';
+import type ElastalertServer from './server';
+import RequestError, { HttpError, PROBLEM_CONTENT_TYPE } from './shared/errors/request-error';
+import { ValidationError } from './shared/errors/validation-error';
+import type { AppEnv } from './shared/http/app-env';
+import Logger from './shared/logger/logger';
+import { packageInfo as npm } from './shared/package-info';
 
-const npm = require('../package.json');
 // Only the path helper, the package entry point loads the whole browser bundle (and touches localStorage on Node 25+)
 const getAbsoluteFSPath: () => string = require('swagger-ui-dist/absolute-path.js');
 const logger = new Logger('Server');
@@ -49,7 +49,7 @@ export function createApp(server: ElastalertServer) {
     await next();
   });
 
-  app.route('/', defaultRoutes);
+  app.route('/', infoRoutes);
   app.route('/status', statusRoutes);
   app.route('/rules', rulesRoutes);
   app.route('/templates', templatesRoutes);

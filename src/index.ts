@@ -1,11 +1,10 @@
-import ConfigService from './common/config/config.service'
-import ElastalertServer from './elastalert_server';
+import { config } from './shared/config/config.service';
+import ElastalertServer from './server';
 
 (async () => {
   // Load configuration
-  let configService = ConfigService.getInstance();
-  await configService.load();
+  await config.load();
 
-  let server = new ElastalertServer();
+  const server = new ElastalertServer();
   await server.start();
 })();
