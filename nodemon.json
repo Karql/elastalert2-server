@@ -3,8 +3,5 @@
     "watch": [
         "src"
     ],
-    "ignore": [
-        "src/controllers/**/*.ts"
-    ],
     "ext": "ts"
 }

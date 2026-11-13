@@ -57,66 +57,40 @@ npm run test && npm run build
 ```
 
 ### Writing a new API (route)
-If you want to write a new REST API service, please be sure to follow these steps:
+The HTTP layer uses [Hono](https://hono.dev) with [@hono/zod-openapi](https://github.com/honojs/middleware/tree/main/packages/zod-openapi). A Zod schema describes each request and response. The same schema validates the request at runtime and generates the OpenAPI spec served at `/swagger.json`.
 
-1. Add your route to [routes overview](../src/routes/routes.js) by adding an object to the array in the following form:
-    ```javascript
-    {
-      // The path to the endpoint, can only be a string. The following example would be accessible through (by default) https://localhost:3030/new_endpoint
-      path: 'new_endpoint',
-      
-      // The method the endpoint supports, can be either a string or an array containing method strings. 
-      // The allowed methods are mentioned in the [Express JS Routing Method Documentation](http://expressjs.com/en/4x/api.html#routing-methods), 
-      // but we suggest sticking to 'GET', 'POST', 'PUT', 'PATCH' and 'DELETE'.
-      method: 'GET',
-      
-      // The handlers for each method. If you provide the methods in an array, you should provide an array with the same length to this property as well. 
-      // Never write inline functions, allways import from '../handlers'.
-      handler: statusHandler
-    }
-    ```
-2. Write a handler for the route in the [routes handlers folder](../src/handlers) making a folder corresponding with the route. So if you add a route with path 'example/route' you should put the handler file in 'src/handlers/example/route/'.  
-    > When you only have one method, use `index.js` as the filename. Otherwise use the method as the filename, e.g. `get.js` or `post.js`.
-    
-    > Take a look at the [example handler](../src/handlers/example_handler.js) for an example and more detailed documentation on how to write a handler.
-    
-> Note that the code in a handler should be brief and readable, in most cases it should only use api calls on an instance of a controller in the [controllers folder](../src/controllers) obtained through the server. Shared utilities / services used by multiple controllers or handlers (like error classes and abstract classes) should be added to the [common folder](../src/common).
+1. Add a file in `src/routes/` (e.g. `example.routes.ts`):
 
-### Writing a controller
-Controllers expose API that can be used by the handlers. There are a couple things to keep in mind when writing a controller. A controller should:
+    ```typescript
+    import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi';
+    import type { AppEnv } from '../app-env';
+    import { errorResponses, json, pathParam } from './openapi';
 
-- be a class named `[controllerName]Controller`
-- use a logger to log important stuff. You can create a new logger by:
+    const ExampleResponse = z.object({ id: z.string() }).openapi('ExampleResponse');
 
-    ```javascript
-    import Logger from 'path/to/common/logger';
-    let logger = new Logger('[className]');
-    ```
-    
-- have an instance of it accessible by the `ElastalertServer`. In the `start()` function in the [`ElastalertServer`](../src/elastalert_server.js) you see 
-
-    ```javascript
-    config.ready(function () {
-      try {
-        //...
-      } catch (error) {
-        logger.error('Starting server failed with error:', error);
-      }
+    const getExample = createRoute({
+      method: 'get',
+      path: '/{id}',
+      tags: ['example'],
+      operationId: 'GetExample',
+      request: { params: z.object({ id: pathParam('id') }) },
+      responses: {
+        200: json(ExampleResponse, 'Example'),
+        ...errorResponses,
+      },
     });
+
+    export const exampleRoutes = new OpenAPIHono<AppEnv>()
+      .openapi(getExample, async (c) => {
+        const { id } = c.req.valid('param');      // validated and typed
+        const server = c.get('server');           // ElastalertServer instance (services)
+        return c.json({ id }, 200);
+      });
     ```
-    You should add an instance of your controller there:
-    
-    ```javascript
-    self._controllerNameController = new controllerName();
-    ```
-    
-    You should also provide a getter for the controller:
-    
-    ```javascript
-    get controllerNameController() {
-      return this._controllerNameController;
-    }
-    ```
+
+2. Mount it in `src/app.ts`: `app.route('/example', exampleRoutes);`
+
+Keep handlers thin and put the logic in a service in `src/services/`. Throw a `RequestError` subclass (`src/common/errors/`) to return an error with a specific status code. Validation errors are handled globally.
 
 ### Contributing checklist
 1. **Did you [run the tests & builds as shown above](#testing-and-building) and [make sure it follows the styleguide](#linting)?**

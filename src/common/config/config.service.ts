@@ -1,11 +1,9 @@
-import Joi from 'joi';
 import fs from 'fs';
 import path from 'path';
+import { z } from 'zod';
 import schema from './schema';
 import Logger from '../logger';
 import { Config } from './config.model';
-import { EROFS } from 'node:constants';
-import config from '.';
 
 // Config file relative from project root
 const configFile = 'config/config.json';
@@ -67,21 +65,21 @@ export default class ConfigService {
 
     else {
       logger.info('Using default config.');
-      return schema.validate({}).value; // TODO: get value without validata?
+      return schema.parse({});
     }
-    
+
     try
     {
       let configJson = await this._readFile(configFilePath);
       let config = JSON.parse(configJson);
 
-      let validationResult = schema.validate(config);
+      let validationResult = schema.safeParse(config);
 
-      if (validationResult.error) {
-        throw validationResult.error; // TODO: better error handling
+      if (!validationResult.success) {
+        throw new Error('\n' + z.prettifyError(validationResult.error));
       }
 
-      return validationResult.value;
+      return validationResult.data;
     }
 
     catch (e) {
@@ -102,7 +100,7 @@ export default class ConfigService {
       try {
         fs.access(filePath, fs.constants.F_OK | fs.constants.R_OK, function (error) {
           if (error) {
-            if (error.errno === -2) {
+            if (error.code === 'ENOENT') {
               logger.info(`No ${path.basename(filePath)} file was found in ${filePath}.`);
             } else {
               logger.warn(`${filePath} can't be read because of reading permission problems. Falling back to default configuration.`);

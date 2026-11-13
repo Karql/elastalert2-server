@@ -1,3 +1,26 @@
+## 6.0.0 (unreleased)
+
+### Changes
+* Migrate HTTP layer from Express + tsoa to [Hono](https://hono.dev) + [@hono/zod-openapi](https://github.com/honojs/middleware/tree/main/packages/zod-openapi)
+  * Request validation and the OpenAPI spec are defined with Zod schemas, no code generation step (`tsoa spec-and-routes`) anymore
+  * Swagger UI still available at `/swagger-ui/`, spec at `/swagger.json`; UI assets are served locally (works without internet access)
+* Migrate config validation from Joi to Zod (`Config` type is now inferred from the schema)
+* Update TypeScript to 7, replace ts-node with tsx for `npm run dev`
+* Remove unused dependencies (lodash, concurrently, cors, body-parser)
+
+### Breaking changes
+* Errors are returned as Problem Details (RFC 9457, `application/problem+json`) with `type`, `title`, `status`, `detail` and `instance` instead of `{ error, message, statusCode, data }`
+* Request validation errors return `422` (was `500` with a tsoa `ValidateError` body) and list invalid values in `errors`
+* Malformed JSON returns `400` and unsupported content types return `415`; bodies must be sent as `application/json` (`application/x-www-form-urlencoded` is no longer accepted)
+* Unknown routes return a `404` problem instead of an HTML page
+* Compiled files from `dist/` are no longer served as static files
+* OpenAPI: `GET /status` operationId changed from `Index` to `GetStatus`; schemas `SatusIndexResponse` and `TempatesAddResponse` renamed to `StatusIndexResponse` and `TemplatesAddResponse`
+
+### Fixes
+* Log a proper message when `config/config.dev.json` does not exist (was reported as a permission problem on Windows)
+* Log unexpected request errors
+* Log the configured websocket port instead of hardcoded `3333`
+
 ## 5.24.0
 
 ### Changes

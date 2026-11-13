@@ -27,7 +27,7 @@ export default class TestService {
     });
   }
 
-  async testRule(rule: string, options?: TestRuleOptions, socket?: WebSocket) {
+  async testRule(rule: string, options?: Partial<TestRuleOptions>, socket?: WebSocket) {
     let opt = {...TestRuleOptionsDefaults, ...options}
 
     const self = this;

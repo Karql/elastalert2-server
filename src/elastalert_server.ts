@@ -1,8 +1,5 @@
-import express, { Express,   Response as ExResponse,
-  Request as ExRequest,
-  NextFunction,} from 'express';
+import { serve, type ServerType } from '@hono/node-server';
 import WebSocket from 'ws';
-import bodyParser from 'body-parser';
 import Logger from './common/logger';
 import config from './common/config';
 import path from 'path';
@@ -12,17 +9,11 @@ import ProcessService from './services/process.service';
 import RulesService from './services/rules.service';
 import TemplatesService from './services/templates.service';
 import TestService from './services/test.service';
-import cors from 'cors';
-import { Server } from 'http';
-import swaggerUi from "swagger-ui-express";
-
-import { RegisterRoutes } from './routes'
-import RequestError from './common/errors/request_error';
+import { createApp } from './app';
 
 let logger = new Logger('Server');
 
 export default class ElastalertServer {
-  private _express: Express;
   private _wss?: WebSocket.Server;
   private _runningTimeouts: NodeJS.Timeout[];
 
@@ -31,12 +22,10 @@ export default class ElastalertServer {
   private _templatesService: TemplatesService;
   private _testService: TestService;
 
-  private _runningServer: Server | null;
+  private _runningServer: ServerType | null;
   private _fileSystemService: FileSystemService;
 
   constructor() {
-    this._express = express();
-
     this._runningTimeouts = [];
 
     this._processService = new ProcessService();
@@ -66,10 +55,6 @@ export default class ElastalertServer {
     });
   }
 
-  get express() {
-    return this._express;
-  }
-
   get processService() {
     return this._processService;
   }
@@ -90,49 +75,15 @@ export default class ElastalertServer {
     const self = this;
 
     try {
-      self._express.use(cors());
-      self._express.use(express.json());
-      self._express.use(express.urlencoded({ extended: true }));
+      const app = createApp(self);
 
-      // TODO
-      self._express.use(express.static("dist"));
-      self._express.use(
-        "/swagger-ui",
-        swaggerUi.serve,
-        swaggerUi.setup(undefined, {
-          swaggerOptions: {
-            url: "/swagger.json",
-          },
-        })
-      );
-
-
-      self._setupRouter();
-
-      self._express.use((err: unknown,
-        req: ExRequest,
-        res: ExResponse,
-        next: NextFunction) => {
-          if (err instanceof RequestError) {
-            let requestError = <RequestError>err;
-            return res.status(requestError.statusCode || 500).json(requestError);
-          }
-
-          // TODO: Not send?
-          if (err instanceof Error) {
-            return res.status(500).json({
-              error: err
-            });
-          }
-
-          next();
-      })
-
-
-
-      self._runningServer = self.express.listen(config.get().port, self._serverController);
-      self._express.set('server', self);
-
+      self._runningServer = serve({ fetch: app.fetch, port: config.get().port }, () => {
+        logger.info('Server started');
+      });
+      self._runningServer.on('error', (error) => {
+        logger.error('HTTP server failed with error:', error);
+        process.exit(1);
+      });
 
       self._processService.start();
       self._processService.onExit(function() {
@@ -164,7 +115,7 @@ export default class ElastalertServer {
             if (data.rule) {
               let rule = data.rule;
               let options = data.options;
-              // TODO: joi validate options
+              // TODO: validate options with TestRuleOptionsSchema
               self._testService?.testRule(rule, options, ws);
             }
           } catch (error) {
@@ -173,7 +124,7 @@ export default class ElastalertServer {
         });
       });
 
-      logger.info('Websocket listening on port 3333');
+      logger.info('Websocket listening on port ' + config.get().wsport);
     }
     catch (error) {
       logger.error('Starting server failed with error:', error);
@@ -199,11 +150,4 @@ export default class ElastalertServer {
     }
   }
 
-  _setupRouter() {
-    RegisterRoutes(this._express);
-  }
-
-  _serverController() {
-    logger.info('Server started');
-  }
 }

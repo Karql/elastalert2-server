@@ -157,6 +157,49 @@ buffer_time:
 There is also a `elastalert-test.yaml` file which is only used when you use the API to test a rule. This allows you to write to a different `writeback_index` for example when testing rules.
  
 ## API
+Interactive documentation is available at `/swagger-ui/` and the OpenAPI 3 spec at `/swagger.json`.
+
+### Errors
+Errors are returned as [Problem Details (RFC 9457)](https://www.rfc-editor.org/rfc/rfc9457) with `Content-Type: application/problem+json`:
+
+```json
+{
+  "type": "urn:elastalert2-server:problem:rule-not-found",
+  "title": "Rule not found",
+  "status": 404,
+  "detail": "The requested rule with id: 'my_rule' couldn't be found.",
+  "instance": "/rules/my_rule"
+}
+```
+
+Request validation errors use status `422` and list the invalid values in `errors` (`pointer` for body members, `parameter` + `in` for path / query parameters):
+
+```json
+{
+  "type": "urn:elastalert2-server:problem:validation-error",
+  "title": "Request validation failed",
+  "status": 422,
+  "detail": "The request contains 1 invalid value.",
+  "instance": "/test",
+  "errors": [{ "detail": "Too small: expected number to be >=1", "pointer": "#/options/days" }]
+}
+```
+
+Problem types (prefix `urn:elastalert2-server:problem:`):
+
+| `type` | Status |
+|---|---|
+| `validation-error` | 422 |
+| `rule-not-found`, `template-not-found` | 404 |
+| `rules-folder-not-found`, `templates-folder-not-found` | 404 |
+| `rule-not-readable`, `rule-not-writable`, `template-not-readable`, `template-not-writable` | 403 |
+| `rules-root-folder-not-creatable`, `templates-root-folder-not-creatable` | 403 |
+| `test-rule-failed` | 500 |
+
+Generic HTTP errors (malformed JSON `400`, unknown route `404`, unsupported media type `415`, unexpected error `500`) use `type: "about:blank"`.
+
+Note: `/metadata/:type` and `/search/:index` return Elasticsearch errors with status `200` (kept for compatibility).
+
 This server exposes the following REST API's:
 
 - **GET `/`**
@@ -234,7 +277,7 @@ This server exposes the following REST API's:
           "testType": "all",
           
           // Can be any number larger than 0 and this tells ElastAlert2 over a period of how many days the test should be run
-          "days": "1"
+          "days": 1,
           
           // Whether to send real alerts
           "alert": false,

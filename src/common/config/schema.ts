@@ -1,39 +1,43 @@
-// Defines the config's Joi schema
-import Joi from 'joi';
+// Defines the config's Zod schema
+import { z } from 'zod';
 
-const schema = Joi.object().keys({
-  'appName': Joi.string().default('elastalert-server'),
-  'es_host': Joi.string().default('elastalert'),
-  'es_port': Joi.number().default(9200),
-  'es_username': Joi.string().default(''),
-  'es_password': Joi.string().default(''),
-  'es_ssl': Joi.boolean().default(false),
-  'ea_verify_certs': Joi.boolean().default(false),
-  'es_ca_certs': Joi.string().default(''),
-  'es_client_cert': Joi.string().default(''),
-  'es_client_key': Joi.string().default(''),
-  'writeback_index': Joi.string().default('elastalert_status'),
-  'port': Joi.number().default(3030),
-  'wsport': Joi.number().default(3333),
-  'elastalertPath': Joi.string().default('/opt/elastalert'),
-  'start': Joi.date().iso(),
-  'end': Joi.date().iso().greater(Joi.ref('start')),
-  'verbose': Joi.boolean().default(false),
-  'es_debug': Joi.boolean().default(false),
-  'debug': Joi.boolean().default(false),
-  'prometheus_port': Joi.number().default(null),
-  'rulesPath': Joi.object().keys({
-    'relative': Joi.boolean().default(true),
-    'path': Joi.string().default('/rules')
-  }).default(),
-  'templatesPath': Joi.object().keys({
-    'relative': Joi.boolean().default(true),
-    'path': Joi.string().default('/rule_templates')
-  }).default(),
-  'dataPath': Joi.object().keys({
-    'relative': Joi.boolean().default(true),
-    'path': Joi.string().default('/server_data')
-  }).default()
-}).default();
+// Joi converted strings to numbers/booleans by default, keep accepting them
+const num = z.union([z.number(), z.string().regex(/^-?\d+(\.\d+)?$/).transform(Number)]);
+const bool = z.union([z.boolean(), z.stringbool()]);
+const isoDate = z.union([z.iso.date(), z.iso.datetime({ offset: true, local: true })]).transform((s) => new Date(s));
+
+const configPath = (defaultPath: string) => z.object({
+  relative: bool.default(true),
+  path: z.string().default(defaultPath),
+}).strict().prefault({});
+
+const schema = z.object({
+  appName: z.string().default('elastalert-server'),
+  es_host: z.string().default('elastalert'),
+  es_port: num.default(9200),
+  es_username: z.string().default(''),
+  es_password: z.string().default(''),
+  es_ssl: bool.default(false),
+  ea_verify_certs: bool.default(false),
+  es_ca_certs: z.string().default(''),
+  es_client_cert: z.string().default(''),
+  es_client_key: z.string().default(''),
+  writeback_index: z.string().default('elastalert_status'),
+  port: num.default(3030),
+  wsport: num.default(3333),
+  elastalertPath: z.string().default('/opt/elastalert'),
+  start: isoDate.optional(),
+  end: isoDate.optional(),
+  verbose: bool.default(false),
+  es_debug: bool.default(false),
+  debug: bool.default(false),
+  prometheus_port: num.nullable().default(null),
+  rulesPath: configPath('/rules'),
+  templatesPath: configPath('/rule_templates'),
+  dataPath: configPath('/server_data'),
+}).strict().refine((c) => !c.start || !c.end || c.end > c.start, {
+  message: '"end" must be greater than "start"',
+  path: ['end'],
+});
 
 export default schema;
