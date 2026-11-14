@@ -1,3 +1,12 @@
+## 5.25.0
+
+### Security
+* Fix path traversal in `/rules` and `/templates`: an encoded `../` in the id (e.g. `GET /rules/..%2Fconfig`) or in the `path` query allowed reading ElastAlert2 `config.yaml` (with Elasticsearch credentials) and writing or deleting `.yaml` files outside the rules / templates folders. Such paths now return `404`
+
+### Changes
+* Update npm packages (fixes vulnerable dependencies)
+* Update TypeScript to 7
+
 ## 5.24.0
 
 ### Changes
