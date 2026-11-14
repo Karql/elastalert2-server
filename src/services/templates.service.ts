@@ -1,4 +1,4 @@
-import { join as joinPath, normalize as normalizePath, extname as pathExtension } from 'path';
+import { join as joinPath, normalize as normalizePath, extname as pathExtension, resolve as resolvePath, sep as pathSeparator } from 'path';
 import { mkdirp } from 'mkdirp';
 import FileSystemService from '../common/file-system/file-system.service';
 import config from '../common/config';
@@ -23,6 +23,10 @@ export default class TemplatesService {
   public async getTemplates(path: string): Promise<{ templates: string[] }> {
     const self = this;
     const fullPath = joinPath(self.templatesFolder, path);
+
+    if (!self.isInsideTemplatesFolder(path)) {
+      throw new TemplatesFolderNotFoundError(path);
+    }
 
     try {
       let directoryIndex = await this.fileSystemController.readDirectory(fullPath);
@@ -85,7 +89,7 @@ export default class TemplatesService {
   private async findTemplate(id: string): Promise<{ read: boolean, write: boolean }> {
     let fileName = id + '.yaml';
 
-    let exists = await this.fileSystemController.fileExists(joinPath(this.templatesFolder, fileName));
+    let exists = await this.fileSystemController.fileExists(this.templatePath(id));
 
     if (!exists) {
       throw new TemplateNotFoundError(id);
@@ -99,18 +103,36 @@ export default class TemplatesService {
   }
 
   private getTemplate(id: string) {
-    const path = joinPath(this.templatesFolder, id + '.yaml');
+    const path = this.templatePath(id);
     return this.fileSystemController.readFile(path);
   }
 
   private editTemplate(id: string, body: string) {
-    const path = joinPath(this.templatesFolder, id + '.yaml');
+    const path = this.templatePath(id);
     return this.fileSystemController.writeFile(path, body);
   }
 
   private deleteTemplate(id: string) {
-    const path = joinPath(this.templatesFolder, id + '.yaml');
+    const path = this.templatePath(id);
     return this.fileSystemController.deleteFile(path);
+  }
+
+  /**
+   * Path of the template file, ids must not escape the templates folder (e.g. `../config` from an encoded `..%2Fconfig`)
+   */
+  private templatePath(id: string): string {
+    if (!this.isInsideTemplatesFolder(id + '.yaml')) {
+      throw new TemplateNotFoundError(id);
+    }
+
+    return joinPath(this.templatesFolder, id + '.yaml');
+  }
+
+  private isInsideTemplatesFolder(relativePath: string): boolean {
+    const root = resolvePath(this.templatesFolder);
+    const fullPath = resolvePath(root, relativePath);
+
+    return fullPath === root || fullPath.startsWith(root + pathSeparator);
   }
 
   private getTemplatesFolder() {

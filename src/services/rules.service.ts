@@ -1,4 +1,4 @@
-import { join as joinPath, normalize as normalizePath, extname as pathExtension } from 'path';
+import { join as joinPath, normalize as normalizePath, extname as pathExtension, resolve as resolvePath, sep as pathSeparator } from 'path';
 import { mkdirp } from 'mkdirp';
 import FileSystemService from '../common/file-system/file-system.service';
 import config from '../common/config';
@@ -23,6 +23,10 @@ export default class RulesService {
   public async getRules(path: string): Promise<{ rules: string[] }> {
     const self = this;
     const fullPath = joinPath(self.rulesFolder, path);
+
+    if (!self.isInsideRulesFolder(path)) {
+      throw new RulesFolderNotFoundError(path);
+    }
 
     try {
       let directoryIndex = await this.fileSystemController.readDirectory(fullPath);
@@ -85,7 +89,7 @@ export default class RulesService {
   private async findRule(id: string): Promise<{ read: boolean, write: boolean }> {
     let fileName = id + '.yaml';
 
-    let exists = await this.fileSystemController.fileExists(joinPath(this.rulesFolder, fileName));
+    let exists = await this.fileSystemController.fileExists(this.rulePath(id));
 
     if (!exists) {
       throw new RuleNotFoundError(id);
@@ -99,18 +103,36 @@ export default class RulesService {
   }
 
   private getRule(id: string) {
-    const path = joinPath(this.rulesFolder, id + '.yaml');
+    const path = this.rulePath(id);
     return this.fileSystemController.readFile(path);
   }
 
   private editRule(id: string, body: string) {
-    const path = joinPath(this.rulesFolder, id + '.yaml');
+    const path = this.rulePath(id);
     return this.fileSystemController.writeFile(path, body);
   }
 
   private deleteRule(id: string) {
-    const path = joinPath(this.rulesFolder, id + '.yaml');
+    const path = this.rulePath(id);
     return this.fileSystemController.deleteFile(path);
+  }
+
+  /**
+   * Path of the rule file, ids must not escape the rules folder (e.g. `../config` from an encoded `..%2Fconfig`)
+   */
+  private rulePath(id: string): string {
+    if (!this.isInsideRulesFolder(id + '.yaml')) {
+      throw new RuleNotFoundError(id);
+    }
+
+    return joinPath(this.rulesFolder, id + '.yaml');
+  }
+
+  private isInsideRulesFolder(relativePath: string): boolean {
+    const root = resolvePath(this.rulesFolder);
+    const fullPath = resolvePath(root, relativePath);
+
+    return fullPath === root || fullPath.startsWith(root + pathSeparator);
   }
 
   private getRulesFolder(): string {
