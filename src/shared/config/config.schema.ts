@@ -13,15 +13,6 @@ const configPath = (defaultPath: string) => z.object({
 
 export const configSchema = z.object({
   appName: z.string().default('elastalert-server'),
-  es_host: z.string().default('elastalert'),
-  es_port: num.default(9200),
-  es_username: z.string().default(''),
-  es_password: z.string().default(''),
-  es_ssl: bool.default(false),
-  ea_verify_certs: bool.default(false),
-  es_ca_certs: z.string().default(''),
-  es_client_cert: z.string().default(''),
-  es_client_key: z.string().default(''),
   writeback_index: z.string().default('elastalert_status'),
   port: num.default(3030),
   wsport: num.default(3333),
@@ -39,6 +30,23 @@ export const configSchema = z.object({
   message: '"end" must be greater than "start"',
   path: ['end'],
 });
+
+/**
+ * Options of the removed Elasticsearch endpoints (/metadata, /mapping, /search).
+ * Still accepted so existing config files keep working, but ignored.
+ * TODO: remove in the next major version
+ */
+export const deprecatedConfigKeys = [
+  'es_host',
+  'es_port',
+  'es_username',
+  'es_password',
+  'es_ssl',
+  'ea_verify_certs',
+  'es_ca_certs',
+  'es_client_cert',
+  'es_client_key',
+] as const;
 
 export type Config = z.infer<typeof configSchema>;
 export type ConfigPath = Config['rulesPath'];

@@ -44,7 +44,7 @@ In free time maybe something more ;)
 ---
 
 ## Installation
-The most convenient way to run the ElastAlert2 server is by using our Docker container image. The default configuration uses `localhost:9200` as ElasticSearch host, if this is not the case in your setup please edit `es_host` and `es_port` in both the `elastalert.yaml` and `config.json` configuration files.
+The most convenient way to run the ElastAlert2 server is by using our Docker container image. The default configuration uses `localhost:9200` as ElasticSearch host, if this is not the case in your setup please edit `es_host` and `es_port` in the `elastalert.yaml` and `elastalert-test.yaml` configuration files.
 
 To run the Docker image you will want to mount the volumes for configuration and rule files to keep them after container updates. In order to do that conveniently, please do: `git clone https://github.com/karql/elastalert2-server.git; cd elastalert2-server`
 
@@ -112,18 +112,11 @@ You can use the following config options:
     "relative": true, // Whether to use a path relative to the `elastalert Path` folder.
     "path": "/server_data" // The path to the data folder.
   },
-  "es_host": "localhost", // For getting metadata and field mappings, connect to this ES server
-  "es_port": 9200, // Port for above
-  "es_username": "", // Option basic-auth username and password for Elasticsearch
-  "es_password": "", // Option basic-auth username and password for Elasticsearch
-  "es_ssl": true, // Enable/Disable SSL
-  "ea_verify_certs": true, //  Verify TLS certificates. false for self-signed certificate
-  "es_ca_certs": "/etc/ssl/elasticsearch/ca", // Path to ca for ElasticSearch (SSL must be enabled)
-  "es_client_cert": "/etc/ssl/elasticsearch/cert", // Path to cert for ElasticSearch (SSL must be enabled)
-  "es_client_key": "/etc/ssl/elasticsearch/key", // Path to key for ElasticSearch (SSL must be enabled)
-  "writeback_index": "elastalert_status" // Writeback index to examine for /metadata endpoint
+  "writeback_index": "elastalert_status" // Writeback index created on startup (`elastalert.create_index --index`), should match `writeback_index` in `elastalert.yaml`
 }
 ```
+
+The server does not connect to Elasticsearch itself, only the ElastAlert2 processes it starts do (configured in `elastalert.yaml` and `elastalert-test.yaml`). The `es_*` options (`es_host`, `es_port`, `es_username`, `es_password`, `es_ssl`, `ea_verify_certs`, `es_ca_certs`, `es_client_cert`, `es_client_key`) were used by the removed `/metadata`, `/mapping` and `/search` endpoints. Since 6.0.0 they are ignored with a warning and can be removed from `config.json`.
 
 ElastAlert2 also expects a `elastalert.yaml` with at least the following options.
 ```yaml
@@ -197,8 +190,6 @@ Problem types (prefix `urn:elastalert2-server:problem:`):
 | `test-rule-failed` | 500 |
 
 Generic HTTP errors (malformed JSON `400`, unknown route `404`, unsupported media type `415`, unexpected error `500`) use `type: "about:blank"`.
-
-Note: `/metadata/:type` and `/search/:index` return Elasticsearch errors with status `200` (kept for compatibility).
 
 This server exposes the following REST API's:
 
@@ -294,18 +285,6 @@ This server exposes the following REST API's:
 - **WEBSOCKET `/test`**
     
     This allows you to test a rule and receive progress over a websocket. Send a message as JSON object (stringified) with two keys: `rule` (yaml string) and `options` (JSON object). You will receive progress messages over the socket as the test runs.
-
-- **GET `/metadata/:type`**
-
-    Returns metadata from elasticsearch related to elasalert's state. `:type` should be one of: elastalert_status, elastalert, elastalert_error, or silence. See [docs about the elastalert2 metadata index](https://elastalert2.readthedocs.io/en/latest/elastalert_status.html).
-
-- **GET `/mapping/:index`**
-
-    Returns field mapping from elasticsearch for a given index. 
-
-- **POST `/search/:index`**
-
-    Performs elasticsearch query on behalf of the API. JSON body to this endpoint will become body of an ES search. 
 
 ## Contribution
 Please report any issues or suggestions you have on the [issues page](https://github.com/karql/elastalert2-server/issues).

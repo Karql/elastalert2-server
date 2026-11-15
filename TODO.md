@@ -10,12 +10,12 @@
 10) `statusHandler` nullable status?
 11) Better implement `ConfigService` as singleton and refactor to not using config/index.ts
 12) Refactor `rulesController.rule`
-13) `metadataHandler` fix `resp.hits.hits.map(h => h._source);`
-14) `metadataHandler` fix `getQueryString` -> `(<any>request.query).rule_name)`
+~~13) `metadataHandler` fix `resp.hits.hits.map(h => h._source);`~~ (metadata endpoint removed)
+~~14) `metadataHandler` fix `getQueryString` -> `(<any>request.query).rule_name)`~~ (metadata endpoint removed)
 ~~15) `scripts/replace_templates.sh` probably not needed~~
 ~~16) Better error handling and documentation~~ (`app.onError` in `app.ts`, error responses documented in OpenAPI)
 17) Logging requst change RouteLogger to ~~morgan (https://rsbh.dev/blog/rest-api-with-express-typescript)~~ bunyan-middleware (https://www.npmjs.com/package/bunyan-middleware)
-18) Split logic form metadata.controller.ts to metadata.service.ts 
+~~18) Split logic form metadata.controller.ts to metadata.service.ts~~ (metadata endpoint removed)
 19) Migrate latest fixes from https://github.com/johnsusek/elastalert-server
 ~~20) Verify test rule on WS
 IMO something is wrong here: e84a3fa8fc79520eaddf701c220d3f92291bb9c9

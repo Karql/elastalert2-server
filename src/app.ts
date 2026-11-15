@@ -6,9 +6,6 @@ import { cors } from 'hono/cors';
 import { HTTPException } from 'hono/http-exception';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 
-import { mappingRoutes } from './modules/elasticsearch/mapping.routes';
-import { metadataRoutes } from './modules/elasticsearch/metadata.routes';
-import { searchRoutes } from './modules/elasticsearch/search.routes';
 import { infoRoutes } from './modules/info/info.routes';
 import { rulesRoutes } from './modules/rules/rules.routes';
 import { statusRoutes } from './modules/status/status.routes';
@@ -53,9 +50,6 @@ export function createApp(server: ElastalertServer) {
   app.route('/status', statusRoutes);
   app.route('/rules', rulesRoutes);
   app.route('/templates', templatesRoutes);
-  app.route('/mapping', mappingRoutes);
-  app.route('/metadata', metadataRoutes);
-  app.route('/search', searchRoutes);
   app.route('/test', testRoutes);
 
   app.doc('/swagger.json', {

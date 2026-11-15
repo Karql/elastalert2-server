@@ -7,8 +7,14 @@
 * Migrate config validation from Joi to Zod (`Config` type is now inferred from the schema)
 * Update TypeScript to 7, replace ts-node with tsx for `npm run dev`
 * Remove unused dependencies (lodash, concurrently, cors, body-parser)
+* Remove the deprecated `elasticsearch` (elasticsearch-js-legacy) client [#51](https://github.com/Karql/elastalert2-server/issues/51); the server no longer connects to Elasticsearch, which also removes its non-JSON console logs [#42](https://github.com/Karql/elastalert2-server/issues/42)
 
 ### Breaking changes
+* Remove Elasticsearch endpoints `GET /metadata/:type`, `GET /mapping/:index` and `POST /search/:index` [#51](https://github.com/Karql/elastalert2-server/issues/51)
+  * `/search` was an unauthenticated proxy to any index using the server's Elasticsearch credentials
+  * `/metadata` queried by mapping type (ElastAlert 0.x writeback layout), which ElastAlert2 indices do not use and Elasticsearch 8 removed
+  * Alert history and ElastAlert2 status can be viewed directly in Kibana (Discover) on the writeback indices
+* Config options `es_host`, `es_port`, `es_username`, `es_password`, `es_ssl`, `ea_verify_certs`, `es_ca_certs`, `es_client_cert` and `es_client_key` are deprecated and ignored (a warning is logged); they will be rejected in the next major version. Elasticsearch connection settings (e.g. `es_hosts` for multiple nodes) belong only in `elastalert.yaml` [#45](https://github.com/Karql/elastalert2-server/issues/45)
 * Errors are returned as Problem Details (RFC 9457, `application/problem+json`) with `type`, `title`, `status`, `detail` and `instance` instead of `{ error, message, statusCode, data }`
 * Request validation errors return `422` (was `500` with a tsoa `ValidateError` body) and list invalid values in `errors`
 * Malformed JSON returns `400` and unsupported content types return `415`; bodies must be sent as `application/json` (`application/x-www-form-urlencoded` is no longer accepted)

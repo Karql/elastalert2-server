@@ -70,7 +70,6 @@ src/
     rules/              /rules
     templates/          /templates
     test/               POST /test and the /test websocket (test.ws.ts)
-    elasticsearch/      /mapping, /metadata, /search and the Elasticsearch client
   shared/
     config/             config.json schema (Zod) and ConfigService
     errors/             RequestError (Problem Details, RFC 9457), ValidationError

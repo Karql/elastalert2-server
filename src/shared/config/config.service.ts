@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { z } from 'zod';
-import { Config, configSchema } from './config.schema';
+import { Config, configSchema, deprecatedConfigKeys } from './config.schema';
 import Logger from '../logger/logger';
 
 // Config file relative from project root
@@ -72,6 +72,8 @@ export default class ConfigService {
       let configJson = await this._readFile(configFilePath);
       let config = JSON.parse(configJson);
 
+      this._removeDeprecatedKeys(config);
+
       let validationResult = configSchema.safeParse(config);
 
       if (!validationResult.success) {
@@ -84,6 +86,24 @@ export default class ConfigService {
     catch (e) {
       logger.error(`Invalid config file: ${configFilePath}, exception: ${e}`); 
       process.exit(1); // TODO: when watching changes move to load and don't crash process
+    }
+  }
+
+  /**
+   * Removes deprecated options from the parsed config file and warns about them.
+   * Values are not logged, they may contain credentials.
+   * @private
+   */
+  _removeDeprecatedKeys(config: unknown) {
+    if (!config || typeof config !== 'object' || Array.isArray(config)) {
+      return;
+    }
+
+    const found = deprecatedConfigKeys.filter((key) => key in config);
+
+    if (found.length > 0) {
+      logger.warn(`Config options ${found.join(', ')} are deprecated and ignored (the Elasticsearch endpoints were removed in 6.0.0). Remove them from the config file.`);
+      found.forEach((key) => delete (config as Record<string, unknown>)[key]);
     }
   }
 
