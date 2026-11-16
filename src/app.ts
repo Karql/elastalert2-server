@@ -4,6 +4,7 @@ import { swaggerUI } from '@hono/swagger-ui';
 import type { Context } from 'hono';
 import { cors } from 'hono/cors';
 import { HTTPException } from 'hono/http-exception';
+import { requestId } from 'hono/request-id';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 
 import { infoRoutes } from './modules/info/info.routes';
@@ -15,12 +16,12 @@ import type ElastalertServer from './server';
 import RequestError, { HttpError, PROBLEM_CONTENT_TYPE } from './shared/errors/request-error';
 import { ValidationError } from './shared/errors/validation-error';
 import type { AppEnv } from './shared/http/app-env';
-import Logger from './shared/logger/logger';
+import { requestLogger } from './shared/http/request-logger';
+import { getPinoLogger } from './shared/logger/logging';
 import { packageInfo as npm } from './shared/package-info';
 
 // Only the path helper, the package entry point loads the whole browser bundle (and touches localStorage on Node 25+)
 const getAbsoluteFSPath: () => string = require('swagger-ui-dist/absolute-path.js');
-const logger = new Logger('Server');
 
 const swaggerAssetsPath = '/swagger-ui/assets';
 
@@ -40,6 +41,9 @@ export function createApp(server: ElastalertServer) {
     },
   });
 
+  // Uses X-Request-Id from the request when present, returns it in the response
+  app.use(requestId());
+  app.use(requestLogger({ debugPathPrefixes: [swaggerAssetsPath] }));
   app.use(cors());
   app.use(async (c, next) => {
     c.set('server', server);
@@ -85,7 +89,7 @@ export function createApp(server: ElastalertServer) {
       return problem(c, new HttpError(err.status, err.message));
     }
 
-    logger.error(`Request ${c.req.method} ${c.req.path} failed with error:`, err);
+    getPinoLogger('ElastalertServer', 'Http').error({ err, method: c.req.method, path: c.req.path, requestId: c.get('requestId') }, 'Request failed with unexpected error');
     return problem(c, new HttpError(500, err.message));
   });
 

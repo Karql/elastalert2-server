@@ -15,5 +15,9 @@
     "relative": true,
     "path": "/rule_templates"
   },
-  "writeback_index": "elastalert_status"
+  "writeback_index": "elastalert_status",
+  "logging": {
+    "level": "info",
+    "format": "json"
+  }
 }

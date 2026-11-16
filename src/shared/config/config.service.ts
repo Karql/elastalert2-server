@@ -3,6 +3,7 @@ import path from 'path';
 import { z } from 'zod';
 import { Config, configSchema, deprecatedConfigKeys } from './config.schema';
 import Logger from '../logger/logger';
+import { configureLogging } from '../logger/logging';
 
 // Config file relative from project root
 const configFile = 'config/config.json';
@@ -45,6 +46,8 @@ export default class ConfigService {
   async load(): Promise<void> {
     //TODO: Watch config file for changes and reload
     this._config = await this._getConfig();
+
+    configureLogging({ ...this._config.logging, serverName: this._config.appName });
   }
 
   async _getConfig(): Promise<Config> {

@@ -1,12 +1,13 @@
 import { ChildProcessWithoutNullStreams, spawn, spawnSync } from 'child_process';
+import readline from 'readline';
+import type { Readable } from 'stream';
 import { config } from '../../shared/config/config.service';
 import Logger from '../../shared/logger/logger';
+import { ElastalertLogLevel, ElastalertLogParser } from './elastalert-log-parser';
 import { Status } from './process-status';
 
 const logger = new Logger('ProcessService');
 
-const ElastalertSplitLogsRegexp = /(?<level>DEBUG|INFO|WARNING|ERROR|CRITICAL):(?<type>\S+?):(?<message>.*?)(?=(?:(?:DEBUG|INFO|WARNING|ERROR|CRITICAL):\S+:)|$)/sg;
-const ElastalertCleanMessageRegexp = /\n|\s{2,}/g;
 const ElastalertLoggers: { [Key: string]: Logger } = {};
 
 export default class ProcessService {
@@ -55,14 +56,10 @@ export default class ProcessService {
       cwd: cfg.elastalertPath
     });
 
-    // Redirect stdin/stderr to logger
-    // create_index does not use logger
-    if (indexCreate.stdout && indexCreate.stdout.toString() !== '') {
-      this.logElastalert("INFO", "create_index", indexCreate.stdout.toString())
-    }
-    if (indexCreate.stderr && indexCreate.stderr.toString() !== '') {
-      this.logElastalert("ERROR", "create_index", indexCreate.stderr.toString())
-    }
+    // Redirect stdout/stderr to logger
+    // create_index prints its output without the logging prefix
+    this.logElastalertOutput(indexCreate.stdout?.toString(), 'INFO', 'create_index');
+    this.logElastalertOutput(indexCreate.stderr?.toString(), 'ERROR', 'create_index');
 
     // Set listeners for index create exit
     if (indexCreate.status === 0) {
@@ -117,16 +114,13 @@ export default class ProcessService {
     logger.info(`Started Elastalert (PID: ${this._process.pid})`);
     this._status = Status.READY;
 
-    // Redirect stdin/stderr to logger
-    this._process.stdout.on('data', (data) => {
-      this.processElastalertLogs(data.toString());
-    });
-    this._process.stderr.on('data', (data) => {
-      this.processElastalertLogs(data.toString());
-    });
+    // Redirect stdout/stderr to logger
+    this.pipeElastalertOutput(this._process.stdout, 'INFO');
+    this.pipeElastalertOutput(this._process.stderr, 'ERROR');
 
     // Set listeners for ElastAlert exit
-    this._process.on('exit', (code) => {
+    // 'close' (not 'exit') fires after stdout/stderr ended, so the last logs (e.g. a traceback) are already written
+    this._process.on('close', (code) => {
       if (code === 0) {
         logger.info(`ElastAlert exited with code ${code}`);
         this._status = Status.IDLE;
@@ -174,36 +168,31 @@ export default class ProcessService {
     return ElastalertLoggers[type];
   }
 
-  public processElastalertLogs(logs: string) {
-    if (logs == null || logs.trim() === '') {
+  /**
+   * Logs output of a running ElastAlert2 process line by line.
+   * Lines without the python logging prefix (e.g. a traceback) are logged with `defaultLevel`.
+   */
+  private pipeElastalertOutput(stream: Readable, defaultLevel: ElastalertLogLevel) {
+    const parser = new ElastalertLogParser(defaultLevel, 'elastalert', (level, type, msg) => this.logElastalert(level, type, msg));
+    const lines = readline.createInterface({ input: stream, crlfDelay: Infinity });
+
+    lines.on('line', (line) => parser.line(line));
+    lines.on('close', () => parser.flush());
+  }
+
+  /** Logs the whole output of a finished ElastAlert2 process */
+  private logElastalertOutput(output: string | undefined, defaultLevel: ElastalertLogLevel, defaultType: string) {
+    if (!output) {
       return;
     }
 
-    let matches = logs.matchAll(ElastalertSplitLogsRegexp);
-    let anyMatch = false;
-
-    for (const match of matches) {
-      if (match.groups === undefined) {
-        break;
-      }
-
-      let level = match.groups['level'];
-      let type = match.groups['type'];
-      let msg = match.groups['message'];
-
-      this.logElastalert(level, type, msg);
-      anyMatch = true;
-    }
-
-    if (!anyMatch) {
-      logger.warn(`No matches while process elastalert log: ${logs}`);
-    }
+    const parser = new ElastalertLogParser(defaultLevel, defaultType, (level, type, msg) => this.logElastalert(level, type, msg));
+    parser.text(output);
+    parser.flush();
   }
 
-  private logElastalert(level: string, type: string, msg: string) {
+  private logElastalert(level: ElastalertLogLevel, type: string, msg: string) {
     let elastalertLogger = this.getElastalertLogger(type);
-    msg = msg.trim();
-    msg = msg.replace(ElastalertCleanMessageRegexp, ' ');
 
     switch (level) {
         case "DEBUG": {
@@ -216,6 +205,7 @@ export default class ProcessService {
         }
         case "WARNING": {
           elastalertLogger.warn(msg);
+          break;
         }
         case "ERROR": {
           elastalertLogger.error(msg);

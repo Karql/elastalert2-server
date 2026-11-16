@@ -112,7 +112,11 @@ You can use the following config options:
     "relative": true, // Whether to use a path relative to the `elastalert Path` folder.
     "path": "/server_data" // The path to the data folder.
   },
-  "writeback_index": "elastalert_status" // Writeback index created on startup (`elastalert.create_index --index`), should match `writeback_index` in `elastalert.yaml`
+  "writeback_index": "elastalert_status", // Writeback index created on startup (`elastalert.create_index --index`), should match `writeback_index` in `elastalert.yaml`
+  "logging": { // See "Logging" below
+    "level": "info", // fatal, error, warn, info, debug, trace or silent. Overridden by the LOG_LEVEL environment variable
+    "format": "json" // json (one JSON object per line) or pretty (human readable). Overridden by the LOG_FORMAT environment variable
+  }
 }
 ```
 
@@ -148,6 +152,30 @@ buffer_time:
 ```
 
 There is also a `elastalert-test.yaml` file which is only used when you use the API to test a rule. This allows you to write to a different `writeback_index` for example when testing rules.
+
+### Logging
+Logs are written to stdout by [pino](https://getpino.io), by default as one JSON object per line:
+
+```json
+{"level":30,"time":"2026-11-13T21:20:57.109Z","pid":1,"hostname":"5d81a9f99456","name":"elastalert-server","component":"Http","method":"GET","path":"/rules","status":200,"durationMs":4,"requestId":"fae7df0b-29ea-4b00-bf7b-1b9fd9982989","msg":"GET /rules 200 4ms"}
+```
+
+- `level` - numeric level: 10 trace, 20 debug, 30 info, 40 warn, 50 error, 60 fatal
+- `name` - `appName` from the config for logs of this server, `elastalert` for logs of the ElastAlert2 processes
+- `component` - part of the server (`Config`, `Server`, `ProcessService`, `Http`, ...) or the python logger name for ElastAlert2 logs (`elastalert`, `elasticsearch`, `py.warnings`, ...)
+- `err` - error with `type`, `message` and `stack`, when an error is logged
+
+Every HTTP request is logged by the `Http` component with `method`, `path` (without the query string), `status`, `durationMs` and `requestId`. Responses with status 5xx are logged as `error`, Swagger UI assets as `debug`. The request id is taken from the `X-Request-Id` request header or generated, and returned in the `X-Request-Id` response header.
+
+Output of the ElastAlert2 processes is parsed line by line. Records in the python logging format (`LEVEL:logger:message`) keep their level, following lines without the prefix (e.g. a stack trace) are added to the same record. Other output is logged as `info` (stdout) or `error` (stderr). Note that ElastAlert2 `DEBUG` records (e.g. from `es_debug`) are only visible with `"level": "debug"`.
+
+Level and format are set in the `logging` section of `config.json` or with environment variables, which take precedence:
+
+```bash
+docker run -e LOG_LEVEL=debug -e LOG_FORMAT=pretty ... karql/elastalert2-server
+```
+
+JSON logs can also be made readable afterwards with [pino-pretty](https://github.com/pinojs/pino-pretty): `docker logs elastalert2-server | npx pino-pretty`.
  
 ## API
 Interactive documentation is available at `/swagger-ui/` and the OpenAPI 3 spec at `/swagger.json`.

@@ -1,5 +1,6 @@
 // Config file (config/config.json) schema; the Config type is inferred from it
 import { z } from 'zod';
+import { logFormats, logLevels } from '../logger/logging';
 
 // Joi converted strings to numbers/booleans by default, keep accepting them
 const num = z.union([z.number(), z.string().regex(/^-?\d+(\.\d+)?$/).transform(Number)]);
@@ -26,6 +27,10 @@ export const configSchema = z.object({
   rulesPath: configPath('/rules'),
   templatesPath: configPath('/rule_templates'),
   dataPath: configPath('/server_data'),
+  logging: z.object({
+    level: z.enum(logLevels).default('info'),
+    format: z.enum(logFormats).default('json'),
+  }).strict().prefault({}),
 }).strict().refine((c) => !c.start || !c.end || c.end > c.start, {
   message: '"end" must be greater than "start"',
   path: ['end'],

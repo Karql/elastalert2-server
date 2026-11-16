@@ -1,35 +1,58 @@
-import bunyan from './bunyan-instance';
+import util from 'util';
+import { getPinoLogger, type LoggerType } from './logging';
 
+type Level = 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+
+/**
+ * Logger for one component, e.g. `new Logger('Config')` logs `{"name":"elastalert-server","component":"Config",...}`.
+ *
+ * Messages are formatted like `console.log`. An `Error` argument is logged in the `err` field (with stack trace)
+ * instead of being added to the message.
+ */
 export default class Logger {
-  private serviceName: string;
-  private loggerType: "ElastalertServer" | "Elastalert";
+  private component: string;
+  private loggerType: LoggerType;
 
-  constructor (serviceName: string, loggerType: "ElastalertServer" | "Elastalert" = "ElastalertServer") {
-    this.serviceName = serviceName;
+  constructor (component: string, loggerType: LoggerType = 'ElastalertServer') {
+    this.component = component;
     this.loggerType = loggerType;
   }
 
-  debug (...messages: any[]) {
-    this.getLogger().debug(this.serviceName + ': ', ...messages);
+  debug (...messages: unknown[]) {
+    this.write('debug', messages);
   }
 
-  info (...messages: any[]) {
-    this.getLogger().info(this.serviceName + ': ', ...messages);
+  info (...messages: unknown[]) {
+    this.write('info', messages);
   }
 
-  warn (...messages: any[]) {
-    this.getLogger().warn(this.serviceName + ': ', ...messages);
+  warn (...messages: unknown[]) {
+    this.write('warn', messages);
   }
 
-  error (...messages: any[]) {
-    this.getLogger().error(this.serviceName + ': ', ...messages);
+  error (...messages: unknown[]) {
+    this.write('error', messages);
   }
 
-  fatal (...messages: any[]) {
-    this.getLogger().fatal(this.serviceName + ': ', ...messages);
+  fatal (...messages: unknown[]) {
+    this.write('fatal', messages);
   }
 
-  private getLogger() {
-    return bunyan[this.loggerType];
+  private write(level: Level, messages: unknown[]) {
+    // Resolved on every call, so loggers created before the config is loaded use the configured level and format
+    const logger = getPinoLogger(this.loggerType, this.component);
+
+    if (!logger.isLevelEnabled(level)) {
+      return;
+    }
+
+    const err = messages.find((m) => m instanceof Error);
+    const msg = util.format(...(err ? messages.filter((m) => m !== err) : messages));
+
+    if (err) {
+      logger[level]({ err }, msg);
+    } else {
+      logger[level](msg);
+    }
   }
 }

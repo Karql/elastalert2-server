@@ -7,6 +7,11 @@
 * Migrate config validation from Joi to Zod (`Config` type is now inferred from the schema)
 * Update TypeScript to 7, replace ts-node with tsx for `npm run dev`
 * Remove unused dependencies (lodash, concurrently, cors, body-parser)
+* Replace bunyan with [pino](https://getpino.io) [#42](https://github.com/Karql/elastalert2-server/issues/42)
+  * Configurable level and format in the new `logging` section of `config.json` (`level`, `format`: `json` or `pretty`) or with `LOG_LEVEL` / `LOG_FORMAT` environment variables
+  * Log every HTTP request (method, path, status, duration, request id); `X-Request-Id` header is accepted and returned
+  * Errors are logged with stack trace in the `err` field
+* Parse ElastAlert2 output line by line: multi-line records (e.g. stack traces) are logged as one entry and keep their line breaks [#42](https://github.com/Karql/elastalert2-server/issues/42)
 * Remove the deprecated `elasticsearch` (elasticsearch-js-legacy) client [#51](https://github.com/Karql/elastalert2-server/issues/51); the server no longer connects to Elasticsearch, which also removes its non-JSON console logs [#42](https://github.com/Karql/elastalert2-server/issues/42)
 
 ### Breaking changes
@@ -14,6 +19,7 @@
   * `/search` was an unauthenticated proxy to any index using the server's Elasticsearch credentials
   * `/metadata` queried by mapping type (ElastAlert 0.x writeback layout), which ElastAlert2 indices do not use and Elasticsearch 8 removed
   * Alert history and ElastAlert2 status can be viewed directly in Kibana (Discover) on the writeback indices
+* Log format changed [#42](https://github.com/Karql/elastalert2-server/issues/42): the component is in the `component` field instead of a `Component: ` prefix in `msg`, the bunyan `v` field is gone and `name` of server logs is `appName` from the config (default `elastalert-server`). Use `pino-pretty` or `LOG_FORMAT=pretty` instead of the `bunyan` CLI
 * Config options `es_host`, `es_port`, `es_username`, `es_password`, `es_ssl`, `ea_verify_certs`, `es_ca_certs`, `es_client_cert` and `es_client_key` are deprecated and ignored (a warning is logged); they will be rejected in the next major version. Elasticsearch connection settings (e.g. `es_hosts` for multiple nodes) belong only in `elastalert.yaml` [#45](https://github.com/Karql/elastalert2-server/issues/45)
 * Errors are returned as Problem Details (RFC 9457, `application/problem+json`) with `type`, `title`, `status`, `detail` and `instance` instead of `{ error, message, statusCode, data }`
 * Request validation errors return `422` (was `500` with a tsoa `ValidateError` body) and list invalid values in `errors`
@@ -23,6 +29,10 @@
 * OpenAPI: `GET /status` operationId changed from `Index` to `GetStatus`; schemas `SatusIndexResponse` and `TempatesAddResponse` renamed to `StatusIndexResponse` and `TemplatesAddResponse`
 
 ### Fixes
+* ElastAlert2 `WARNING` records were logged twice, as warning and as error [#41](https://github.com/Karql/elastalert2-server/issues/41)
+* Fragments of ElastAlert2 output (e.g. part of a stack trace) are no longer reported as `No matches while process elastalert log` [#42](https://github.com/Karql/elastalert2-server/issues/42)
+* ElastAlert2 `DEBUG` records were always dropped (log level was fixed to `info`) [#42](https://github.com/Karql/elastalert2-server/issues/42)
+* `appName` config option was not used as the logger name
 * Log a proper message when `config/config.dev.json` does not exist (was reported as a permission problem on Windows)
 * Log unexpected request errors
 * Log the configured websocket port instead of hardcoded `3333`

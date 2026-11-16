@@ -73,8 +73,9 @@ src/
   shared/
     config/             config.json schema (Zod) and ConfigService
     errors/             RequestError (Problem Details, RFC 9457), ValidationError
-    http/               OpenAPI helpers and the Hono env type
-    logger/  file-system/
+    http/               OpenAPI helpers, request logging middleware and the Hono env type
+    logger/             pino setup (logging.ts) and the Logger wrapper used by services
+    file-system/
 ```
 
 File names use kebab-case with a role suffix: `*.routes.ts`, `*.schemas.ts`, `*.service.ts`, `*.errors.ts`.
