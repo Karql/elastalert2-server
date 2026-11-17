@@ -108,6 +108,15 @@ export default class TestService {
 
     processOptions.push('-m', 'elastalert.test_rule', '--config', 'config-test.yaml', tempFilePath, '--days', opt.days.toString());
 
+    // test_rule uses --start instead of --days when both are set
+    if (opt.start) {
+      processOptions.push('--start', opt.start);
+    }
+
+    if (opt.end) {
+      processOptions.push('--end', opt.end);
+    }
+
     if (opt.format === 'json') {
       processOptions.push('--formatted-output');
     }

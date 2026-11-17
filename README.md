@@ -297,6 +297,13 @@ This server exposes the following REST API's:
           
           // Can be any number larger than 0 and this tells ElastAlert2 over a period of how many days the test should be run
           "days": 1,
+
+          // Optional - Start querying from this timestamp (ISO 8601, without an offset it is UTC). Takes precedence over "days"
+          "start": "2026-11-12T00:00:00Z",
+
+          // Optional - Query to this timestamp (ISO 8601, without an offset it is UTC). Default: now.
+          // Without "start" the test covers "days" before "end"
+          "end": "2026-11-13T00:00:00Z",
           
           // Whether to send real alerts
           "alert": false,

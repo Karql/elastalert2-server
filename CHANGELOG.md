@@ -11,6 +11,7 @@
   * Configurable level and format in the new `logging` section of `config.json` (`level`, `format`: `json` or `pretty`) or with `LOG_LEVEL` / `LOG_FORMAT` environment variables
   * Log every HTTP request (method, path, status, duration, request id); `X-Request-Id` header is accepted and returned
   * Errors are logged with stack trace in the `err` field
+* Add `start` and `end` options to `POST /test` to test a rule over a given time range (passed to `elastalert.test_rule` as `--start` / `--end`), ported from [johnsusek/elastalert-server](https://github.com/johnsusek/elastalert-server/commit/22c6f0f)
 * Parse ElastAlert2 output line by line: multi-line records (e.g. stack traces) are logged as one entry and keep their line breaks [#42](https://github.com/Karql/elastalert2-server/issues/42)
 * Remove the deprecated `elasticsearch` (elasticsearch-js-legacy) client [#51](https://github.com/Karql/elastalert2-server/issues/51); the server no longer connects to Elasticsearch, which also removes its non-JSON console logs [#42](https://github.com/Karql/elastalert2-server/issues/42)
 

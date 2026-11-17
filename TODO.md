@@ -16,7 +16,7 @@
 ~~16) Better error handling and documentation~~ (`app.onError` in `app.ts`, error responses documented in OpenAPI)
 ~~17) Logging requst change RouteLogger to morgan / bunyan-middleware~~ (`requestLogger` Hono middleware, pino)
 ~~18) Split logic form metadata.controller.ts to metadata.service.ts~~ (metadata endpoint removed)
-19) Migrate latest fixes from https://github.com/johnsusek/elastalert-server
+~~19) Migrate latest fixes from https://github.com/johnsusek/elastalert-server~~ (reviewed: the rest are Praeco features, Elasticsearch/OpenSearch client changes or already done here)
 ~~20) Verify test rule on WS
 IMO something is wrong here: e84a3fa8fc79520eaddf701c220d3f92291bb9c9
 Last catch in testRule() supresses all errors~~
