@@ -30,6 +30,11 @@
 * OpenAPI: `GET /status` operationId changed from `Index` to `GetStatus`; schemas `SatusIndexResponse` and `TempatesAddResponse` renamed to `StatusIndexResponse` and `TemplatesAddResponse`
 
 ### Fixes
+* **Security:** rule and template ids and the `path` query could escape the rules / templates folder with an encoded `../` (e.g. `GET /rules/..%2Fconfig` returned the ElastAlert2 `config.yaml`, `POST` and `DELETE` could write and delete `.yaml` files outside the folder). Paths outside the folder now return `404`; subfolders (`/rules/team%2Fmy_rule`) still work
+* The rules / templates root folder is created when missing on `GET /rules` / `GET /templates` (the check never ran)
+* `*-not-readable` / `*-not-writable` (403) are returned for real file permission errors (permissions were never checked)
+* Saving a rule or template into a missing subfolder returns `404` `*-folder-not-found` instead of `500`
+* Deleting a rule, template or temporary test file waits for the file to be removed and reports errors
 * ElastAlert2 `WARNING` records were logged twice, as warning and as error [#41](https://github.com/Karql/elastalert2-server/issues/41)
 * Fragments of ElastAlert2 output (e.g. part of a stack trace) are no longer reported as `No matches while process elastalert log` [#42](https://github.com/Karql/elastalert2-server/issues/42)
 * ElastAlert2 `DEBUG` records were always dropped (log level was fixed to `info`) [#42](https://github.com/Karql/elastalert2-server/issues/42)

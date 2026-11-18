@@ -75,7 +75,7 @@ src/
     errors/             RequestError (Problem Details, RFC 9457), ValidationError
     http/               OpenAPI helpers, request logging middleware and the Hono env type
     logger/             pino setup (logging.ts) and the Logger wrapper used by services
-    file-system/
+    file-system/        YamlFileStore (rule and template files, path checks) and file helpers
 ```
 
 File names use kebab-case with a role suffix: `*.routes.ts`, `*.schemas.ts`, `*.service.ts`, `*.errors.ts`.

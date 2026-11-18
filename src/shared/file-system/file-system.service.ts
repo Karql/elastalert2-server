@@ -1,4 +1,4 @@
-import fs, { read } from 'fs';
+import fs from 'fs';
 import { join as joinPath } from 'path';
 import { mkdirp } from 'mkdirp';
 import { DirectoryIndex } from './directory-index';
@@ -56,7 +56,7 @@ export default class FileSystemService {
   }
 
   async deleteFile(path: string): Promise<void> {
-    fs.promises.unlink(path);
+    await fs.promises.unlink(path);
   }
 
   getEmptyDirectoryIndex(): DirectoryIndex {

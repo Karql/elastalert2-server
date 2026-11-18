@@ -1,7 +1,6 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi';
 import type { AppEnv } from '../../shared/http/app-env';
 import { bodyErrorResponses, errorResponses, json, notFoundResponse } from '../../shared/http/openapi';
-import { TemplateNotFoundError } from './templates.errors';
 import {
   TemplateParams, TemplatesAddResponse, TemplatesAddTemplatePayload, TemplatesGetTemplatesResponse, TemplatesQuery,
 } from './templates.schemas';
@@ -65,40 +64,29 @@ const deleteTemplate = createRoute({
 
 export const templatesRoutes = new OpenAPIHono<AppEnv>()
   .openapi(getTemplates, async (c) => {
-    const { path } = c.req.valid('query'); // TODO: probably not used
-    const templates = await c.get('server').templatesService.getTemplates(path ?? '');
+    const { path } = c.req.valid('query');
+    const templates = await c.get('server').templatesService.list(path ?? '');
 
-    return c.json(templates, 200);
+    return c.json({ templates }, 200);
   })
   .openapi(getTemplate, async (c) => {
     const { id } = c.req.valid('param');
-    const template = await c.get('server').templatesService.template(id);
 
-    return c.json(await template.get(), 200);
+    return c.json(await c.get('server').templatesService.get(id), 200);
   })
   .openapi(addTemplate, async (c) => {
     const { id } = c.req.valid('param');
     const { yaml } = c.req.valid('json');
-    const templatesService = c.get('server').templatesService;
 
-    try {
-      const template = await templatesService.template(id);
-      await template.edit(yaml);
-    } catch (error) {
-      if (!(error instanceof TemplateNotFoundError)) {
-        throw error;
-      }
-
-      await templatesService.createTemplate(id, yaml);
-    }
+    // Creates or replaces, `created` is always true (kept for compatibility)
+    await c.get('server').templatesService.save(id, yaml);
 
     return c.json({ created: true, id }, 200);
   })
   .openapi(deleteTemplate, async (c) => {
     const { id } = c.req.valid('param');
-    const template = await c.get('server').templatesService.template(id);
 
-    await template.delete();
+    await c.get('server').templatesService.delete(id);
 
     return c.body(null, 204);
   });

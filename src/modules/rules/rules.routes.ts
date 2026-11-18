@@ -1,7 +1,6 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi';
 import type { AppEnv } from '../../shared/http/app-env';
 import { bodyErrorResponses, errorResponses, json, notFoundResponse } from '../../shared/http/openapi';
-import { RuleNotFoundError } from './rules.errors';
 import { RuleParams, RulesAddResponse, RulesAddRulePayload, RulesGetRulesResponse, RulesQuery } from './rules.schemas';
 
 const tags = ['rules'];
@@ -63,40 +62,29 @@ const deleteRule = createRoute({
 
 export const rulesRoutes = new OpenAPIHono<AppEnv>()
   .openapi(getRules, async (c) => {
-    const { path } = c.req.valid('query'); // TODO: probably not used
-    const rules = await c.get('server').rulesService.getRules(path ?? '');
+    const { path } = c.req.valid('query');
+    const rules = await c.get('server').rulesService.list(path ?? '');
 
-    return c.json(rules, 200);
+    return c.json({ rules }, 200);
   })
   .openapi(getRule, async (c) => {
     const { id } = c.req.valid('param');
-    const rule = await c.get('server').rulesService.rule(id);
 
-    return c.json(await rule.get(), 200);
+    return c.json(await c.get('server').rulesService.get(id), 200);
   })
   .openapi(addRule, async (c) => {
     const { id } = c.req.valid('param');
     const { yaml } = c.req.valid('json');
-    const rulesService = c.get('server').rulesService;
 
-    try {
-      const rule = await rulesService.rule(id);
-      await rule.edit(yaml);
-    } catch (error) {
-      if (!(error instanceof RuleNotFoundError)) {
-        throw error;
-      }
-
-      await rulesService.createRule(id, yaml);
-    }
+    // Creates or replaces, `created` is always true (kept for compatibility)
+    await c.get('server').rulesService.save(id, yaml);
 
     return c.json({ created: true, id }, 200);
   })
   .openapi(deleteRule, async (c) => {
     const { id } = c.req.valid('param');
-    const rule = await c.get('server').rulesService.rule(id);
 
-    await rule.delete();
+    await c.get('server').rulesService.delete(id);
 
     return c.body(null, 204);
   });

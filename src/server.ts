@@ -1,5 +1,4 @@
 import { serve, type ServerType } from '@hono/node-server';
-import path from 'path';
 import WebSocket from 'ws';
 import { createApp } from './app';
 import RulesService from './modules/rules/rules.service';
@@ -8,6 +7,7 @@ import TemplatesService from './modules/templates/templates.service';
 import TestService from './modules/test/test.service';
 import { listenTestWebSocket } from './modules/test/test.ws';
 import { config } from './shared/config/config.service';
+import { resolveConfigPath } from './shared/config/config-path';
 import FileSystemService from './shared/file-system/file-system.service';
 import Logger from './shared/logger/logger';
 
@@ -120,13 +120,7 @@ export default class ElastalertServer {
   }
 
   getDataFolder() {
-    const dataFolderSettings = config.get().dataPath;
-
-    if (dataFolderSettings.relative) {
-      return path.join(config.get().elastalertPath, dataFolderSettings.path);
-    } else {
-      return dataFolderSettings.path;
-    }
+    return resolveConfigPath(config.get().dataPath);
   }
 
 }
