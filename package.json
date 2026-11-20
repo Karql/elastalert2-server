@@ -3,14 +3,10 @@
   "version": "5.24.0",
   "description": "A server that runs ElastAlert2 and exposes REST API's for manipulating rules and alerts.",
   "license": "MIT",
-  "main": "index.js",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/karql/elastalert2-server.git"
-  },
-  "directories": {
-    "lib": "./lib",
-    "test": "./test"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.8",

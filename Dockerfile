@@ -66,12 +66,10 @@ RUN npm ci --omit=dev
 COPY config/elastalert.yaml /opt/elastalert/config.yaml
 COPY config/elastalert-test.yaml /opt/elastalert/config-test.yaml
 COPY config/config.json config/config.json
-COPY rule_templates/ /opt/elastalert/rule_templates
-COPY elastalert_modules/ /opt/elastalert/elastalert_modules
 
-# Add default rules directory
-# Set permission as unpriviledged user (1000:1000), compatible with Kubernetes
-RUN mkdir -p /opt/elastalert/rules/ /opt/elastalert/server_data/tests/ \
+# Add default rules and rule templates directories
+# Set permission as unprivileged user (1000:1000), compatible with Kubernetes
+RUN mkdir -p /opt/elastalert/rules/ /opt/elastalert/rule_templates/ /opt/elastalert/server_data/tests/ \
     && chown -R node:node /opt
 
 USER node

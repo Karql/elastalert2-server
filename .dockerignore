@@ -1,11 +1,7 @@
 *
-!index.js
 !package-lock.json
 !package.json
 !src/
-!scripts/
-!elastalert_modules/
-!rule_templates/
 !config/config.json
 !config/elastalert.yaml
 !config/elastalert-test.yaml

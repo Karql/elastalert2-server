@@ -16,6 +16,7 @@
 * Remove the deprecated `elasticsearch` (elasticsearch-js-legacy) client [#51](https://github.com/Karql/elastalert2-server/issues/51); the server no longer connects to Elasticsearch, which also removes its non-JSON console logs [#42](https://github.com/Karql/elastalert2-server/issues/42)
 
 ### Breaking changes
+* The Docker image no longer contains the BitSensor rule templates (`/opt/elastalert/rule_templates` is empty) and the BitSensor `elastalert_modules` enhancement. Mount your own templates folder if you use templates
 * Remove Elasticsearch endpoints `GET /metadata/:type`, `GET /mapping/:index` and `POST /search/:index` [#51](https://github.com/Karql/elastalert2-server/issues/51)
   * `/search` was an unauthenticated proxy to any index using the server's Elasticsearch credentials
   * `/metadata` queried by mapping type (ElastAlert 0.x writeback layout), which ElastAlert2 indices do not use and Elasticsearch 8 removed
