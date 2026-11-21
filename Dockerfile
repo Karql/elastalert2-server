@@ -1,11 +1,11 @@
-FROM alpine:3.24 as build-elastalert
+FROM alpine:3.24 AS build-elastalert
 ARG ELASTALERT_VERSION=2.32.0
 ENV ELASTALERT_VERSION=${ELASTALERT_VERSION}
 # URL from which to download ElastAlert 2
 ARG ELASTALERT_URL=https://github.com/jertel/elastalert2/archive/refs/tags/$ELASTALERT_VERSION.zip
 ENV ELASTALERT_URL=${ELASTALERT_URL}
 # ElastAlert 2 home directory full path
-ENV ELASTALERT_HOME /opt/elastalert
+ENV ELASTALERT_HOME=/opt/elastalert
 
 WORKDIR /opt
 
@@ -32,7 +32,7 @@ RUN python3 -m venv /opt/elastalert2-venv && \
     pip3 install dist/*.tar.gz && \
     deactivate
 
-FROM node:26.12.1-alpine3.24 as build-server
+FROM node:26.12.1-alpine3.24 AS build-server
 
 WORKDIR /opt/elastalert-server
 
@@ -48,7 +48,7 @@ LABEL description="ElastAlert2 Server"
 LABEL maintainer="Karql <karql.pl@gmail.com>"
 
 # Set timezone for this container
-ENV TZ Etc/UTC
+ENV TZ=Etc/UTC
 
 RUN apk add --update --no-cache tzdata python3
 
@@ -74,5 +74,5 @@ RUN mkdir -p /opt/elastalert/rules/ /opt/elastalert/rule_templates/ /opt/elastal
 
 USER node
 
-EXPOSE 3030
+EXPOSE 3030 3333
 CMD ["node", "dist/index.js"]

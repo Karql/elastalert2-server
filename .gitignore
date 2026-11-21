@@ -3,7 +3,8 @@
 .project
 .idea
 .idea_modules/
-.vscode
+.vscode/*
+!.vscode/launch.json
 
 dist
 coverage
