@@ -52,7 +52,7 @@ export default class ProcessService {
 
     // Create ElastAlert index if it doesn't exist yet
     logger.info('Creating index');
-    var indexCreate = spawnSync('python', ['-m', 'elastalert.create_index', '--index', cfg.writeback_index, '--old-index', ''], {
+    const indexCreate = spawnSync('python', ['-m', 'elastalert.create_index', '--index', cfg.writeback_index, '--old-index', ''], {
       cwd: cfg.elastalertPath
     });
 
@@ -130,11 +130,7 @@ export default class ProcessService {
       }
       this._process = null;
 
-      this._onExitCallbacks.map(function(onExitCallback) {
-        if (onExitCallback !== null) {
-          onExitCallback();
-        }
-      });
+      this._onExitCallbacks.forEach((onExitCallback) => onExitCallback());
     });
 
     // Set listener for ElastAlert error

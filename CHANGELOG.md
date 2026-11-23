@@ -32,6 +32,8 @@
 * OpenAPI: `GET /status` operationId changed from `Index` to `GetStatus`; schemas `SatusIndexResponse` and `TempatesAddResponse` renamed to `StatusIndexResponse` and `TemplatesAddResponse`
 
 ### Fixes
+* Rule test output could be cut off (the result was returned on the process `exit` event, before stdout was fully read) and plain text output got extra line breaks between chunks
+* The server crashed when `python` could not be started for a rule test (unhandled `error` event)
 * **Security:** rule and template ids and the `path` query could escape the rules / templates folder with an encoded `../` (e.g. `GET /rules/..%2Fconfig` returned the ElastAlert2 `config.yaml`, `POST` and `DELETE` could write and delete `.yaml` files outside the folder). Paths outside the folder now return `404`; subfolders (`/rules/team%2Fmy_rule`) still work
 * The rules / templates root folder is created when missing on `GET /rules` / `GET /templates` (the check never ran)
 * `*-not-readable` / `*-not-writable` (403) are returned for real file permission errors (permissions were never checked)

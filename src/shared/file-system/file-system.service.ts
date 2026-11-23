@@ -4,17 +4,12 @@ import { mkdirp } from 'mkdirp';
 import { DirectoryIndex } from './directory-index';
 
 export default class FileSystemService {
-  constructor() { }
-
+  /** Names of files and directories in the folder (follows symlinks, e.g. files mounted from a Kubernetes ConfigMap) */
   async readDirectory(path: string): Promise<DirectoryIndex> {
-    const self = this;
+    const directoryIndex: DirectoryIndex = { directories: [], files: [] };
 
-    let elements = await fs.promises.readdir(path);
-    let directoryIndex = self.getEmptyDirectoryIndex();
-
-    for(let element of elements)
-    {
-      let stats = await fs.promises.stat(joinPath(path, element));
+    for (const element of await fs.promises.readdir(path)) {
+      const stats = await fs.promises.stat(joinPath(path, element));
 
       if (stats.isDirectory()) {
         directoryIndex.directories.push(element);
@@ -26,54 +21,12 @@ export default class FileSystemService {
     return directoryIndex;
   }
 
-  directoryExists(path: string): Promise<boolean> {
-    return this._exists(path);
-  }
-
-  /**
-   *
-   * @param path
-   * @returns Promise resolves to first directory made that had to be created, or undefined if everything already exists. Promise rejects if any errors are encountered. Note that, in the case of promise rejection, some directories may have been created, as recursive directory creation is not an atomic operation.
-   */
-  createDirectoryIfNotExists(path: string): Promise<string | unknown> {
-    return mkdirp(path);
-  }
-
-  /*deleteDirectory(path) {
-
-  }*/
-
-  fileExists(path: string) {
-    return this._exists(path);
-  }
-
-  async readFile(path: string): Promise<string> {
-    return await fs.promises.readFile(path, 'utf8');
+  /** Creates the folder with missing parents, does nothing when it already exists */
+  async createDirectoryIfNotExists(path: string): Promise<void> {
+    await mkdirp(path);
   }
 
   async writeFile(path: string, content = ''): Promise<void> {
-    await fs.promises.writeFile(path, content)
-  }
-
-  async deleteFile(path: string): Promise<void> {
-    await fs.promises.unlink(path);
-  }
-
-  getEmptyDirectoryIndex(): DirectoryIndex {
-    return {
-      directories: [],
-      files: []
-    };
-  }
-
-  async _exists(path: string): Promise<boolean> {
-    try {
-      await fs.promises.access(path, fs.constants.F_OK);
-      return true;
-    }
-
-    catch {
-      return false;
-    }
+    await fs.promises.writeFile(path, content);
   }
 }

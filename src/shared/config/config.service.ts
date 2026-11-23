@@ -5,99 +5,94 @@ import { Config, configSchema, deprecatedConfigKeys } from './config.schema';
 import Logger from '../logger/logger';
 import { configureLogging } from '../logger/logging';
 
-// Config file relative from project root
-const configFile = 'config/config.json';
-const devConfigFile = 'config/config.dev.json';
+// Config files relative to the working directory, config.dev.json takes precedence (for local development)
+const devConfigPath = path.join(process.cwd(), 'config/config.dev.json');
+const configPath = path.join(process.cwd(), 'config/config.json');
 
-const configPath = path.join(process.cwd(), configFile);
-const devConfigPath = path.join(process.cwd(), devConfigFile);
 const logger = new Logger('Config');
 
 export default class ConfigService {
-  private static _instance: ConfigService;
+  private static instance?: ConfigService;
 
-  private _config?: Config;
+  private config?: Config;
 
-  private constructor() {
+  private constructor() {}
 
-  }
+  static getInstance(): ConfigService {
+    ConfigService.instance ??= new ConfigService();
 
-  public static getInstance(): ConfigService {
-    if (!this._instance) {
-      this._instance = new ConfigService();
-    }
-
-    return this._instance;
+    return ConfigService.instance;
   }
 
   get(): Config {
-    if (!this._config) {
-      throw new Error('Config not set')
+    if (!this.config) {
+      throw new Error('Config not loaded, call config.load() first');
     }
 
-    return this._config;
+    return this.config;
   }
 
   /**
-   * Loads the config by reading the config file or falling back to defaults.
-   *
-   * @returns {Promise} Returns a promise which resolves when everything is done (as a promise would).
+   * Reads `config/config.dev.json` or `config/config.json` (defaults when neither exists) and applies
+   * the logging options. Exits the process when the config file is invalid.
    */
   async load(): Promise<void> {
-    //TODO: Watch config file for changes and reload
-    this._config = await this._getConfig();
+    this.config = await this.readConfig();
 
-    configureLogging({ ...this._config.logging, serverName: this._config.appName });
+    configureLogging({ ...this.config.logging, serverName: this.config.appName });
   }
 
-  async _getConfig(): Promise<Config> {
-    let configFilePath: string;
+  private async readConfig(): Promise<Config> {
+    const file = await this.findConfigFile();
 
-    if (await this._fileExists(devConfigPath))
-    {
-      logger.info('Found dev config file.');
-      configFilePath = devConfigPath;
-    }
-
-    else if (await this._fileExists(configPath))
-    {
-      logger.info('Found config file.');
-      configFilePath = configPath;
-    }
-
-    else {
-      logger.info('Using default config.');
+    if (!file) {
+      logger.info('No config file found, using the default config.');
       return configSchema.parse({});
     }
 
-    try
-    {
-      let configJson = await this._readFile(configFilePath);
-      let config = JSON.parse(configJson);
+    logger.info(`Using config file ${file}`);
 
-      this._removeDeprecatedKeys(config);
+    try {
+      const config: unknown = JSON.parse(await fs.promises.readFile(file, 'utf8'));
 
-      let validationResult = configSchema.safeParse(config);
+      this.removeDeprecatedKeys(config);
 
-      if (!validationResult.success) {
-        throw new Error('\n' + z.prettifyError(validationResult.error));
+      const result = configSchema.safeParse(config);
+
+      if (!result.success) {
+        throw new Error('\n' + z.prettifyError(result.error));
       }
 
-      return validationResult.data;
+      return result.data;
+    } catch (error) {
+      logger.error(`Invalid config file: ${file}, exception: ${error}`);
+      process.exit(1);
+    }
+  }
+
+  /** First readable config file, unreadable files are skipped with a warning */
+  private async findConfigFile(): Promise<string | undefined> {
+    for (const file of [devConfigPath, configPath]) {
+      try {
+        await fs.promises.access(file, fs.constants.R_OK);
+        return file;
+      } catch (error) {
+        const code = (error as NodeJS.ErrnoException).code;
+
+        if (code !== 'ENOENT') {
+          logger.warn(`Config file ${file} can't be read (${code}), skipping it.`);
+        }
+      }
     }
 
-    catch (e) {
-      logger.error(`Invalid config file: ${configFilePath}, exception: ${e}`); 
-      process.exit(1); // TODO: when watching changes move to load and don't crash process
-    }
+    return undefined;
   }
 
   /**
    * Removes deprecated options from the parsed config file and warns about them.
    * Values are not logged, they may contain credentials.
-   * @private
    */
-  _removeDeprecatedKeys(config: unknown) {
+  private removeDeprecatedKeys(config: unknown) {
     if (!config || typeof config !== 'object' || Array.isArray(config)) {
       return;
     }
@@ -108,55 +103,6 @@ export default class ConfigService {
       logger.warn(`Config options ${found.join(', ')} are deprecated and ignored (the Elasticsearch endpoints were removed in 6.0.0). Remove them from the config file.`);
       found.forEach((key) => delete (config as Record<string, unknown>)[key]);
     }
-  }
-
-  /**
-   * Checks if the config file exists and we have reading permissions
-   *
-   * @returns {Promise} Promise returning true if the file was found and false otherwise.
-   * @private
-   */
-  _fileExists(filePath: string): Promise<boolean> {
-    return new Promise<boolean>((resolve) => {
-      // Check if the config file exists and has reading permissions
-      try {
-        fs.access(filePath, fs.constants.F_OK | fs.constants.R_OK, function (error) {
-          if (error) {
-            if (error.code === 'ENOENT') {
-              logger.info(`No ${path.basename(filePath)} file was found in ${filePath}.`);
-            } else {
-              logger.warn(`${filePath} can't be read because of reading permission problems. Falling back to default configuration.`);
-            }
-            resolve(false);
-          } else {
-            logger.info(`A config file was found in ${filePath}. Using that config.`);
-            resolve(true);
-          }
-        });
-      } catch (error) {
-        logger.error('Error getting access information with fs using `fs.access`. Error:', error);
-        // TODO: deadlock here?
-      }
-    });
-  }
-
-  /**
-   * Reads the config file.
-   *
-   * @returns {Promise} Promise returning the config if successfully read. Rejects if reading the config failed.
-   * @private
-   */
-  _readFile(file: string) {
-    return new Promise<string>(function (resolve, reject) {
-      fs.readFile(file, 'utf8', function (error, config) {
-        if (error) {
-          logger.warn(`Unable to read config file in (${file}). Using default configuration. Error: `, error);
-          reject();
-        } else {
-          resolve(config);
-        }
-      });
-    });
   }
 }
 

@@ -11,11 +11,10 @@ import { resolveConfigPath } from './shared/config/config-path';
 import FileSystemService from './shared/file-system/file-system.service';
 import Logger from './shared/logger/logger';
 
-let logger = new Logger('Server');
+const logger = new Logger('Server');
 
 export default class ElastalertServer {
   private _wss?: WebSocket.Server;
-  private _runningTimeouts: NodeJS.Timeout[];
 
   private _processService: ProcessService;
   private _rulesService: RulesService;
@@ -26,8 +25,6 @@ export default class ElastalertServer {
   private _fileSystemService: FileSystemService;
 
   constructor() {
-    this._runningTimeouts = [];
-
     this._processService = new ProcessService();
     this._rulesService = new RulesService();
     this._templatesService = new TemplatesService();
@@ -35,7 +32,6 @@ export default class ElastalertServer {
 
     this._runningServer = null;
     this._fileSystemService = new FileSystemService();
-
 
     // Set listener on process exit (SIGINT == ^C)
     process.on('SIGINT', () => {
@@ -72,27 +68,25 @@ export default class ElastalertServer {
   }
 
   async start() {
-    const self = this;
-
     try {
-      const app = createApp(self);
+      const app = createApp(this);
 
-      self._runningServer = serve({ fetch: app.fetch, port: config.get().port }, () => {
+      this._runningServer = serve({ fetch: app.fetch, port: config.get().port }, () => {
         logger.info('Server started');
       });
-      self._runningServer.on('error', (error) => {
+      this._runningServer.on('error', (error) => {
         logger.error('HTTP server failed with error:', error);
         process.exit(1);
       });
 
-      self._processService.start();
-      self._processService.onExit(function() {
+      this._processService.start();
+      this._processService.onExit(() => {
         // If the elastalert process exits, we should stop the server.
         process.exit(0);
       });
 
       try {
-        await self._fileSystemService.createDirectoryIfNotExists(self.getDataFolder());
+        await this._fileSystemService.createDirectoryIfNotExists(this.getDataFolder());
       }
       catch (ex) {
         logger.error('Error creating data folder with error:', ex);
@@ -101,7 +95,7 @@ export default class ElastalertServer {
 
       logger.info('Server listening on port ' + config.get().port);
 
-      self._wss = listenTestWebSocket(config.get().wsport, self._testService);
+      this._wss = listenTestWebSocket(config.get().wsport, this._testService);
 
       logger.info('Websocket listening on port ' + config.get().wsport);
     }
@@ -115,8 +109,6 @@ export default class ElastalertServer {
     this._processService?.stop();
     this._runningServer?.close();
     this._wss?.close();
-
-    this._runningTimeouts.forEach((timeout) => clearTimeout(timeout));
   }
 
   getDataFolder() {
