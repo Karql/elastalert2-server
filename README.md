@@ -1,12 +1,10 @@
 # ElastAlert2 Server
 
-A server that runs [ElastAlert2](https://github.com/jertel/elastalert2) and exposes REST API's for manipulating rules and alerts.
+A server that runs [ElastAlert2](https://github.com/jertel/elastalert2) and exposes a REST API for managing rules and rule templates and for testing rules.
 
-It works great in combination with fork [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plugin).
+It works great together with the [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plugin). You can also manage everything directly from Swagger UI 😍 at `/swagger-ui/`.
 
-You can also maintain everything directly  from swagger 😍 just add `/swagger-ui/` to the URL.
-
-Check [Docker Hub](https://hub.docker.com/r/karql/elastalert2-server) for current images.
+Docker images are available on [Docker Hub](https://hub.docker.com/r/karql/elastalert2-server).
 
 ![GitHub release](https://img.shields.io/github/release/karql/elastalert2-server.svg)
 ![Docker pulls](https://img.shields.io/docker/pulls/karql/elastalert2-server.svg)
@@ -14,102 +12,87 @@ Check [Docker Hub](https://hub.docker.com/r/karql/elastalert2-server) for curren
 
 ## Historical background
 
-This project is fork of [bitsensor/elastalert](https://github.com/bitsensor/elastalert) Copyright © 2019, BitSensor B.V.
+This project is a fork of [bitsensor/elastalert](https://github.com/bitsensor/elastalert), Copyright © 2019, BitSensor B.V., which is no longer maintained.
 
-Official repository is not maintained anymore. Last commit was a long time ago. From that moment some things have changed a bit. 
+I use and like this project, so I decided to keep developing it:
 
-New version of [ElastAlert](https://github.com/Yelp/elastalert) was released and depends on python3. Some dependencies also went further.
-
-I use and like this project so I have decided to develop it by my own.
-
-Main goal of this fork is to support the latest version of [ElastAlert](https://github.com/Yelp/elastalert) - DONE! 
-
-Edit: 2021-09-09 [ElastAlert](https://github.com/Yelp/elastalert) is also not maintained anymore. [ElastAlert2](https://github.com/jertel/elastalert2) has been born and now it is usied underhood.
-
-
-In free time maybe something more ;)
-
-## Plans
-
-:heavy_check_mark: Support the latest version of [ElastAlert](https://github.com/Yelp/elastalert) - DONE! Check this release: [4.0.0](https://github.com/Karql/elastalert/releases/tag/4.0.0) for more details.
-
-:heavy_check_mark: Support the latest version of [ElastAlert2](https://github.com/jertel/elastalert2) - DONE! Check this release: [5.0.0-next.0](https://github.com/Karql/elastalert/releases/tag/5.0.0-next.0) for more details.
-
-:heavy_check_mark: Migrate to TypeScript
-
-:heavy_check_mark: Add swagger
-
-![0%](https://progress-bar.dev/0) Prepare a good getting started guide
-
----
+- [4.0.0](https://github.com/Karql/elastalert2-server/releases/tag/4.0.0) - support for the latest [ElastAlert](https://github.com/Yelp/elastalert) on Python 3
+- [5.0.0](https://github.com/Karql/elastalert2-server/releases/tag/5.0.0) - [ElastAlert2](https://github.com/jertel/elastalert2), the maintained successor of ElastAlert, migration to TypeScript and Swagger
+- 6.0.0 - [Hono](https://hono.dev) + [Zod](https://zod.dev), Problem Details errors, structured logging (see [CHANGELOG](CHANGELOG.md))
 
 ## Installation
-The most convenient way to run the ElastAlert2 server is by using our Docker container image. The default configuration uses `localhost:9200` as ElasticSearch host, if this is not the case in your setup please edit `es_host` and `es_port` in the `elastalert.yaml` and `elastalert-test.yaml` configuration files.
 
-To run the Docker image you will want to mount the volumes for configuration and rule files to keep them after container updates. In order to do that conveniently, please do: `git clone https://github.com/karql/elastalert2-server.git; cd elastalert2-server`
+The most convenient way to run the server is the Docker image. Clone the repository to get the example configuration files:
 
-```bash
-docker run -d -p 3030:3030 -p 3333:3333 \
-    -v `pwd`/config/elastalert.yaml:/opt/elastalert/config.yaml \
-    -v `pwd`/config/elastalert-test.yaml:/opt/elastalert/config-test.yaml \
-    -v `pwd`/config/config.json:/opt/elastalert-server/config/config.json \
-    -v `pwd`/rules:/opt/elastalert/rules \
-    --net="host" \
-    --name elastalert2-server karql/elastalert2-server:latest
-```
-
-## Building Docker image
-
-Clone the repository
 ```bash
 git clone https://github.com/karql/elastalert2-server.git && cd elastalert2-server
 ```
 
-Build the image
+Set the Elasticsearch connection (`es_host`, `es_port`, ...) in `config/elastalert.yaml` and `config/elastalert-test.yaml`. The default is `localhost:9200`, which inside a container is the container itself, so use the address of your Elasticsearch.
+
+Create the folders for rules and rule templates first, otherwise Docker creates them owned by root and the server (running as user `node`, uid 1000) can't write to them:
+
+```bash
+mkdir -p rules rule_templates
+
+docker run -d -p 3030:3030 -p 3333:3333 \
+    -v "$(pwd)/config/elastalert.yaml:/opt/elastalert/config.yaml" \
+    -v "$(pwd)/config/elastalert-test.yaml:/opt/elastalert/config-test.yaml" \
+    -v "$(pwd)/config/config.json:/opt/elastalert-server/config/config.json" \
+    -v "$(pwd)/rules:/opt/elastalert/rules" \
+    -v "$(pwd)/rule_templates:/opt/elastalert/rule_templates" \
+    --name elastalert2-server karql/elastalert2-server:latest
 ```
+
+Port `3030` is the REST API, `3333` the websocket for testing rules. If Elasticsearch runs on the Docker host, you can use `--network host` instead of the `-p` options and keep `localhost` (Linux only).
+
+## Building Docker image
+
+```bash
 docker build -t karql/elastalert2-server .
 ```
 
-### Options
+Using a custom ElastAlert2 version (a [release from GitHub](https://github.com/jertel/elastalert2/releases)), e.g. `master`:
 
-Using a custom ElastAlert2 version (a [release from github](https://github.com/jertel/elastalert2/releases)) e.g. `master` or etc
 ```bash
 docker build --build-arg ELASTALERT_VERSION=master -t elastalert2-server .
 ```
-Using a custom mirror
+
+Using a custom mirror:
+
 ```bash
 docker build --build-arg ELASTALERT_URL=http://example.mirror.com/master.zip -t elastalert2-server .
 ```
 
 ## Configuration
-The configuration is located in the `config/config.json` file. 
-For local testing purposes you can then use a `config/config.dev.json` file which overrides `config/config.json`.
 
-You can use the following config options:
+The configuration is located in `config/config.json`. For local development you can create `config/config.dev.json`, which is used instead of `config/config.json` when it exists.
+
+Available options (all are optional, the values below are the defaults unless stated otherwise):
 
 ```javascript
 {
-  "appName": "elastalert-server", // The name used by the logging framework.
-  "port": 3030, // The port to bind to
-  "wsport": 3333, // The port to bind to for websockets
-  "elastalertPath": "/opt/elastalert",  // The path to the root ElastAlert2 folder. It's the folder that contains the `setup.py` script.
-  "start": "2014-01-01T00:00:00", // Optional date to start querying from
-  "end": "2016-01-01T00:00:00", // Optional date to stop querying at
-  "verbose": true, // Optional, will increase the logging verboseness, which allows you to see information about the state of queries.
-  "es_debug": true, // Optional, will enable logging for all queries made to Elasticsearch
-  "debug": false, // Will run ElastAlert2 in debug mode. This will increase the logging verboseness, change all alerts to DebugAlerter, which prints alerts and suppresses their normal action, and skips writing search and alert metadata back to Elasticsearch.
-  "prometheus_port": 9979, // Will expose ElastAlert 2 Prometheus metrics on the specified port 
-  "rulesPath": { // The path to the rules folder containing all the rules. If the folder is empty a dummy file will be created to allow ElastAlert2 to start.
-    "relative": true, // Whether to use a path relative to the `elastalert2 Path` folder.
-    "path": "/rules" // The path to the rules folder. 
+  "appName": "elastalert-server", // The name used in the logs (`name` field)
+  "port": 3030, // The port of the REST API
+  "wsport": 3333, // The port of the websocket for testing rules
+  "elastalertPath": "/opt/elastalert", // The ElastAlert2 folder, the working directory of the ElastAlert2 processes
+  "start": "2014-01-01T00:00:00", // Optional (no default), date to start querying from
+  "end": "2016-01-01T00:00:00", // Optional (no default), date to stop querying at, must be after "start"
+  "verbose": false, // Increase the logging verboseness, which allows you to see information about the state of queries
+  "es_debug": false, // Enable logging for all queries made to Elasticsearch (logged by ElastAlert2 on DEBUG level)
+  "debug": false, // Run ElastAlert2 in debug mode: more logging, all alerts are replaced by DebugAlerter (printed, not sent) and nothing is written back to Elasticsearch
+  "prometheus_port": null, // Expose ElastAlert2 Prometheus metrics on this port (null or 0 = disabled)
+  "rulesPath": { // The folder with the rules
+    "relative": true, // Whether the path is relative to `elastalertPath`
+    "path": "/rules"
   },
-  "templatesPath": { // The path to the rules folder containing all the rule templates. If the folder is empty a dummy file will be created to allow ElastAlert2 to start.
-    "relative": true, // Whether to use a path relative to the `elastalert2 Path` folder.
-    "path": "/rule_templates" // The path to the rule templates folder.
+  "templatesPath": { // The folder with the rule templates
+    "relative": true, // Whether the path is relative to `elastalertPath`
+    "path": "/rule_templates"
   },
-  "dataPath": { // The path to a folder that the server can use to store data and temporary files.
-    "relative": true, // Whether to use a path relative to the `elastalert Path` folder.
-    "path": "/server_data" // The path to the data folder.
+  "dataPath": { // A folder for the server's data and temporary files (e.g. rules being tested)
+    "relative": true, // Whether the path is relative to `elastalertPath`
+    "path": "/server_data"
   },
   "writeback_index": "elastalert_status", // Writeback index created on startup (`elastalert.create_index --index`), should match `writeback_index` in `elastalert.yaml`
   "logging": { // See "Logging" below
@@ -119,40 +102,35 @@ You can use the following config options:
 }
 ```
 
-The server does not connect to Elasticsearch itself, only the ElastAlert2 processes it starts do (configured in `elastalert.yaml` and `elastalert-test.yaml`). The `es_*` options (`es_host`, `es_port`, `es_username`, `es_password`, `es_ssl`, `ea_verify_certs`, `es_ca_certs`, `es_client_cert`, `es_client_key`) were used by the removed `/metadata`, `/mapping` and `/search` endpoints. Since 6.0.0 they are ignored with a warning and can be removed from `config.json`.
+The server does not connect to Elasticsearch itself, only the ElastAlert2 processes it starts do. The `es_*` options (`es_host`, `es_port`, `es_username`, `es_password`, `es_ssl`, `ea_verify_certs`, `es_ca_certs`, `es_client_cert`, `es_client_key`) were used by the `/metadata`, `/mapping` and `/search` endpoints removed in 6.0.0. They are ignored with a warning and can be removed from `config.json`.
 
-ElastAlert2 also expects a `elastalert.yaml` with at least the following options.
+ElastAlert2 itself is configured in `elastalert.yaml` (mounted as `/opt/elastalert/config.yaml`), which needs at least the following options. See the [ElastAlert2 documentation](https://elastalert2.readthedocs.io/en/latest/running_elastalert.html) for all of them.
+
 ```yaml
-# The elasticsearch hostname for metadata writeback
-# Note that every rule can have its own elasticsearch host
+# The Elasticsearch host and port (every rule can have its own)
 es_host: localhost
-
-# The elasticsearch port
 es_port: 9200
 
-# The index on es_host which is used for metadata storage
-# This can be a unmapped index, but it is recommended that you run
-# elastalert-create-index to set a mapping
+# The index used for metadata storage, created on startup
 writeback_index: elastalert_status
 
-# This is the folder that contains the rule yaml files
-# Any .yaml file will be loaded as a rule
+# The folder with the rule yaml files, any .yaml file is loaded as a rule
 rules_folder: rules
 
-# How often ElastAlert2 will query elasticsearch
-# The unit can be anything from weeks to seconds
+# How often ElastAlert2 queries Elasticsearch
 run_every:
   seconds: 5
 
-# ElastAlert2 will buffer results from the most recent
-# period of time, in case some log sources are not in real time
+# ElastAlert2 buffers results from the most recent period of time,
+# in case some log sources are not in real time
 buffer_time:
   minutes: 1
 ```
 
-There is also a `elastalert-test.yaml` file which is only used when you use the API to test a rule. This allows you to write to a different `writeback_index` for example when testing rules.
+`elastalert-test.yaml` (mounted as `/opt/elastalert/config-test.yaml`) is used only for testing rules through the API, e.g. to write to a different `writeback_index`.
 
 ### Logging
+
 Logs are written to stdout by [pino](https://getpino.io), by default as one JSON object per line:
 
 ```json
@@ -166,7 +144,7 @@ Logs are written to stdout by [pino](https://getpino.io), by default as one JSON
 
 Every HTTP request is logged by the `Http` component with `method`, `path` (without the query string), `status`, `durationMs` and `requestId`. Responses with status 5xx are logged as `error`, Swagger UI assets as `debug`. The request id is taken from the `X-Request-Id` request header or generated, and returned in the `X-Request-Id` response header.
 
-Output of the ElastAlert2 processes is parsed line by line. Records in the python logging format (`LEVEL:logger:message`) keep their level, following lines without the prefix (e.g. a stack trace) are added to the same record. Other output is logged as `info` (stdout) or `error` (stderr). Note that ElastAlert2 `DEBUG` records (e.g. from `es_debug`) are only visible with `"level": "debug"`.
+Output of the ElastAlert2 processes is parsed line by line. Records in the python logging format (`LEVEL:logger:message`) keep their level, following lines without the prefix (e.g. a stack trace) are added to the same record. Other output is logged as `info` (stdout) or `error` (stderr). ElastAlert2 `DEBUG` records (e.g. from `es_debug`) are only visible with `"level": "debug"`.
 
 Level and format are set in the `logging` section of `config.json` or with environment variables, which take precedence:
 
@@ -175,11 +153,73 @@ docker run -e LOG_LEVEL=debug -e LOG_FORMAT=pretty ... karql/elastalert2-server
 ```
 
 JSON logs can also be made readable afterwards with [pino-pretty](https://github.com/pinojs/pino-pretty): `docker logs elastalert2-server | npx pino-pretty`.
- 
+
 ## API
+
 Interactive documentation is available at `/swagger-ui/` and the OpenAPI 3 spec at `/swagger.json`.
 
+- **GET `/`** - name, port and version of the server
+
+- **GET `/status`** - status of the ElastAlert2 process: `IDLE`, `STARTING`, `READY`, `CLOSING` or `ERROR`
+
+- **GET `/status/control/:action`** - `:action` is `start` or `stop`, starts or stops the ElastAlert2 process
+
+- **GET `/rules`** - ids of the rules in the `rulesPath` folder: `{ "rules": ["my_rule"] }`. Use the optional `?path=team` query to list a subfolder.
+
+- **GET `/rules/:id`** - the yaml of the rule. Rules in subfolders use an encoded slash, e.g. `/rules/team%2Fmy_rule`.
+
+- **POST `/rules/:id`** - creates or replaces the rule:
+
+    ```javascript
+    {
+      // Required - the full yaml rule config
+      "yaml": "..."
+    }
+    ```
+
+- **DELETE `/rules/:id`** - deletes the rule
+
+- **GET `/templates`**, **GET / POST / DELETE `/templates/:id`** - the same for rule templates in the `templatesPath` folder
+
+- **POST `/test`** - tests a rule with `elastalert.test_rule` and returns its output:
+
+    ```javascript
+    {
+      // Required - the full yaml rule config
+      "rule": "...",
+
+      // Optional - the options to use for testing the rule
+      "options": {
+        // "all" gives the full console output, "schemaOnly" only validates the yaml config,
+        // "countOnly" only finds the number of matching documents and lists available fields
+        "testType": "all",
+
+        // Over how many days the test runs, any number larger than 0
+        "days": 1,
+
+        // Optional - start querying from this timestamp (ISO 8601, without an offset it is UTC). Takes precedence over "days"
+        "start": "2026-11-12T00:00:00Z",
+
+        // Optional - query to this timestamp (ISO 8601, without an offset it is UTC). Default: now.
+        // Without "start" the test covers "days" before "end"
+        "end": "2026-11-13T00:00:00Z",
+
+        // Whether to send real alerts
+        "alert": false,
+
+        // Optional - return results in structured JSON
+        "format": "json",
+
+        // Limit returned results to this amount, 0 means no limit
+        "maxResults": 0
+      }
+    }
+    ```
+
+- **WEBSOCKET `ws://host:3333/test`** (port `wsport`) - tests a rule and reports progress while it runs. Send the same JSON as the body of **POST `/test`**. The server sends events `{ "event": "...", "data": ... }`: `progress` (stderr of the test), `result` (stdout) and `error` (Problem Details, see below). Closing the websocket stops the test.
+
 ### Errors
+
 Errors are returned as [Problem Details (RFC 9457)](https://www.rfc-editor.org/rfc/rfc9457) with `Content-Type: application/problem+json`:
 
 ```json
@@ -218,107 +258,10 @@ Problem types (prefix `urn:elastalert2-server:problem:`):
 
 Generic HTTP errors (malformed JSON `400`, unknown route `404`, unsupported media type `415`, unexpected error `500`) use `type: "about:blank"`.
 
-This server exposes the following REST API's:
+## Contributing
 
-- **GET `/`**
+Please report issues and suggestions on the [issues page](https://github.com/karql/elastalert2-server/issues). See [CONTRIBUTING.md](CONTRIBUTING.md) for the development setup and how to add a new API.
 
-    Exposes the current version running
-  
-- **GET `/status`**
+## License
 
-    Returns either 'SETUP', 'READY', 'ERROR', 'STARTING', 'CLOSING', 'FIRST_RUN' or 'IDLE' depending on the current ElastAlert2 process status. 
-  
-- **GET `/status/control/:action`**
-
-    Where `:action` can be either 'start' or 'stop', which will respectively start or stop the current ElastAlert2 process.
-  
-- **GET `/rules`**
-
-    Returns a list of directories and rules that exist in the `rulesPath` (from the config) and are being run by the ElastAlert2 process.
-  
-- **GET `/rules/:id`**
-
-    Where `:id` is the id of the rule returned by **GET `/rules`**, which will return the file contents of that rule.
-  
-- **POST `/rules/:id`**
-
-    Where `:id` is the id of the rule returned by **GET `/rules`**, which will allow you to edit the rule. The body send should be:
-  
-      ```javascript
-      {
-        // Required - The full yaml rule config.
-        "yaml": "..."
-      }
-      ```
-    
-- **DELETE `/rules/:id`**
-
-    Where `:id` is the id of the rule returned by **GET `/rules`**, which will delete the given rule.
-
-- **GET `/templates`**
-
-    Returns a list of directories and templates that exist in the `templatesPath` (from the config) and are being run by the ElastAlert2 process.
-  
-- **GET `/templates/:id`**
-
-    Where `:id` is the id of the template returned by **GET `/templates`**, which will return the file contents of that template.
-  
-- **POST `/templates/:id`**
-
-    Where `:id` is the id of the template returned by **GET `/templates`**, which will allow you to edit the template. The body send should be:
-  
-      ```javascript
-      {
-        // Required - The full yaml template config.
-        "yaml": "..."
-      }
-      ```
-    
-- **DELETE `/templates/:id`**
-
-    Where `:id` is the id of the template returned by **GET `/templates`**, which will delete the given template.
-  
-- **POST `/test`**
-
-    This allows you to test a rule. The body send should be:
-  
-      ```javascript
-      {
-        // Required - The full yaml rule config.
-        "rule": "...",
-        
-        // Optional - The options to use for testing the rule.
-        "options": {
-        
-          // Can be either "all", "schemaOnly" or "countOnly". "all" will give the full console output. 
-          // "schemaOnly" will only validate the yaml config. "countOnly" will only find the number of matching documents and list available fields.
-          "testType": "all",
-          
-          // Can be any number larger than 0 and this tells ElastAlert2 over a period of how many days the test should be run
-          "days": 1,
-
-          // Optional - Start querying from this timestamp (ISO 8601, without an offset it is UTC). Takes precedence over "days"
-          "start": "2026-11-12T00:00:00Z",
-
-          // Optional - Query to this timestamp (ISO 8601, without an offset it is UTC). Default: now.
-          // Without "start" the test covers "days" before "end"
-          "end": "2026-11-13T00:00:00Z",
-          
-          // Whether to send real alerts
-          "alert": false,
-
-          // Return results in structured JSON
-          "format": "json",
-
-          // Limit returned results to this amount
-          "maxResults": 1000
-        }
-      }
-      ``` 
-
-- **WEBSOCKET `/test`**
-    
-    This allows you to test a rule and receive progress over a websocket. Send a message as JSON object (stringified) with two keys: `rule` (yaml string) and `options` (JSON object). You will receive progress messages over the socket as the test runs.
-
-## Contribution
-Please report any issues or suggestions you have on the [issues page](https://github.com/karql/elastalert2-server/issues).
+[MIT](LICENSE.md)

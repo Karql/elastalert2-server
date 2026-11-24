@@ -1,62 +1,56 @@
-# OUTDATED!!!
+# Contributing to ElastAlert2 Server
 
-# Contributing to ElastAlert Server
-**Do you want to contribute to our ElastAlert Server or issue an issue? Great! Since we hate rejecting pull requests or ask you to describe your issue more clearly, please read these guidelines carefully:**
+Thanks for your interest in the project! Bug reports, ideas and pull requests are welcome.
 
-## Filing an issue
-- Describe your issue clearly. 
-- When issuing a bug, please provide steps on how to recreate the bug if possible. 
-- If you get an error, include the error in your issue
+## Reporting issues
 
-We seriously appreciate thoughtful comments. If an issue is important to you, add a comment with a solid write up of your use case and explain why it's so important. Please avoid posting comments comprised solely of a thumbs up emoji :+1:.
+Report bugs and suggestions on the [issues page](https://github.com/karql/elastalert2-server/issues). Please include:
 
-Granted that you share your thoughts, we might even be able to come up with creative solutions to your specific problem. If everything you'd like to say has already been brought up but you'd still like to add a token of support, feel free to add a :+1: [thumbs up reaction](https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments) on the issue itself and on the comment which best summarizes your thoughts.
+- the version of the server (`GET /` or the Docker image tag) and of ElastAlert2
+- steps to reproduce the problem
+- the error response and the relevant logs (run with `LOG_LEVEL=debug` for more details)
 
-## Contributing code
-First and foremost, before you start working on any code, please **check the issues and file an issue first**. Someone could already be working on your problem or we need to tell you about some known issues before working on the pull request.
+For a bigger change, please open an issue first, so we can agree on the approach before you spend time on the code.
 
-We enjoy working with contributors to get their code accepted. There are many approaches to fixing a problem and it is important to find the best approach before writing too much code.
+## Development setup
 
-### Setting up the development environment
-First, fork this repository and clone it:
+Requirements:
 
-```bash
-git clone https://github.com/[YOUR_USERNAME]/elastalert.git elastalert
-cd elastalert
-```
-
-Then follow the default installation steps, so:
-
-1. Run `nvm install "$(cat .nvmrc)"` to install & use the required NodeJS version.
-2. Run `npm install` to install all the dependencies.
-3. Look at the `Config` section in [REAMDE.md](../README.md#config) to setup the path to your ElastAlert instance.
-
-### Linting
-We use [ESLint](http://eslint.org/) to ensure the that the [Styleguide](../STYLEGUIDE.md) is being followed so we suggest you integrate it in your code editor to get live feedback.
-
-Here are some hints for getting eslint setup in your favorite editor:
-
-Editor     | Plugin
------------|-------------------------------------------------------------------------------
-Sublime    | [SublimeLinter-eslint](https://github.com/roadhump/SublimeLinter-eslint#installation)
-Atom       | [linter-eslint](https://github.com/AtomLinter/linter-eslint#installation)
-IntelliJ   | Settings » Languages & Frameworks » JavaScript » Code Quality Tools » ESLint
-`vi`       | [scrooloose/syntastic](https://github.com/scrooloose/syntastic)
-
-Another tool we use for enforcing consistent coding style is EditorConfig, which can be set up by installing a plugin in your editor that dynamically updates its configuration. Take a look at the [EditorConfig](http://editorconfig.org/#download) site to find a plugin for your editor, and browse our [`.editorconfig`](https://github.com/elastic/kibana/blob/master/.editorconfig) file to see what config rules we set up.
-
-### Testing and Building
-To ensure that your changes will not break other functionality, please run the test suite and build process before submitting your Pull Request.
-
-Before running the tests you will need to install the projects dependencies as described above.
-
-Once that's done, just run:
+- Node.js in the version from [`.nvmrc`](.nvmrc) (`nvm install` / `nvm use`)
+- [ElastAlert2](https://github.com/jertel/elastalert2) (`pip install elastalert2`) available as `python -m elastalert...`, the server starts it and stops when it exits. Without it, the easiest way to run everything is the Docker image (see [README](README.md#installation)).
 
 ```bash
-npm run test && npm run build
+git clone https://github.com/karql/elastalert2-server.git && cd elastalert2-server
+npm ci
 ```
 
-### Project structure
+Create `config/config.dev.json` (ignored by git, used instead of `config/config.json`) pointing to your ElastAlert2 folder, which contains `config.yaml`, `config-test.yaml` and the `rules` folder, for example:
+
+```json
+{
+  "elastalertPath": "/home/me/elastalert",
+  "logging": { "level": "debug", "format": "pretty" }
+}
+```
+
+Useful commands:
+
+| Command | Description |
+|---|---|
+| `npm run dev` | runs `src/index.ts` with [tsx](https://tsx.is) and restarts on changes |
+| `npm run typecheck` | type checks the code |
+| `npm run build` | compiles to `dist/` |
+| `npm start` | runs the compiled server |
+
+The repository contains VS Code launch configurations for debugging (`.vscode/launch.json`).
+
+### Code style
+
+- TypeScript in strict mode, no `any`, the compiler also reports unused code, missing returns and switch fallthrough
+- [EditorConfig](https://editorconfig.org) (`.editorconfig`): 2 spaces, LF, UTF-8
+- `async` / `await` instead of callbacks and `.then()` chains
+
+## Project structure
 The code is organized by feature. Everything that belongs to one API area (routes, Zod schemas, service, errors) is in its own folder under `src/modules/`. Infrastructure shared by all modules is in `src/shared/`.
 
 ```
@@ -80,7 +74,8 @@ src/
 
 File names use kebab-case with a role suffix: `*.routes.ts`, `*.schemas.ts`, `*.service.ts`, `*.errors.ts`.
 
-### Writing a new API (route)
+## Adding a new API
+
 The HTTP layer uses [Hono](https://hono.dev) with [@hono/zod-openapi](https://github.com/honojs/middleware/tree/main/packages/zod-openapi). A Zod schema describes each request and response. The same schema validates the request at runtime and generates the OpenAPI spec served at `/swagger.json`.
 
 1. Create a module folder, e.g. `src/modules/example/`, with the schemas in `example.schemas.ts`:
@@ -98,7 +93,7 @@ The HTTP layer uses [Hono](https://hono.dev) with [@hono/zod-openapi](https://gi
     ```typescript
     import { OpenAPIHono, createRoute } from '@hono/zod-openapi';
     import type { AppEnv } from '../../shared/http/app-env';
-    import { errorResponses, json } from '../../shared/http/openapi';
+    import { errorResponses, json, notFoundResponse } from '../../shared/http/openapi';
     import { ExampleParams, ExampleResponse } from './example.schemas';
 
     const getExample = createRoute({
@@ -109,37 +104,27 @@ The HTTP layer uses [Hono](https://hono.dev) with [@hono/zod-openapi](https://gi
       request: { params: ExampleParams },
       responses: {
         200: json(ExampleResponse, 'Example'),
+        ...notFoundResponse,
         ...errorResponses,
       },
     });
 
     export const exampleRoutes = new OpenAPIHono<AppEnv>()
       .openapi(getExample, async (c) => {
-        const { id } = c.req.valid('param');      // validated and typed
-        const server = c.get('server');           // ElastalertServer instance (services)
+        const { id } = c.req.valid('param'); // validated and typed
+
         return c.json({ id }, 200);
       });
     ```
 
 3. Mount it in `src/app.ts`: `app.route('/example', exampleRoutes);`
 
-Keep handlers thin and put the logic in `example.service.ts`. To return an error, throw a `RequestError` subclass from `example.errors.ts`. It is sent as Problem Details (`application/problem+json`). Validation errors (422) are handled globally.
+Keep handlers thin and put the logic in `example.service.ts`. Services are created in `server.ts` and available in handlers through `c.get('server')`. To return an error, throw a `RequestError` subclass from `example.errors.ts`, it is sent as Problem Details (`application/problem+json`). Validation errors (422) are handled globally.
 
-### Contributing checklist
-1. **Did you [run the tests & builds as shown above](#testing-and-building) and [make sure it follows the styleguide](#linting)?**
-2. **If you made a new feature, did you think about making it configurable?**
-      
-      Always make sure the feature can be ran on any environment by providing config options for environment specific settings. 
-    > If you add a config option, check that you add it in the [config schema](../src/shared/config/config.schema.ts), the [config example](../config/config.example.json) and the [config section in readme](../README.md#config).
-3. **Did you make sure you saved all your dependencies with `npm install [packageName] --save`?**
-4. **Did you write tests for the code you wrote?**
-    > If you have any questions about writing tests, let us know by sending an e-mail to [dev@bitsensor.io](mailto:dev@bitsensor.io).
-5. **Did you document the code you wrote?**
+## Pull requests
 
-      Especially when writing a controller with an API, please provide a little documentation on the API functions using the [JSDoc](http://usejsdoc.org/) comment style.
-6. **Did you have fun writing your code?**
-      
-      We know that this list is quite long. If you want to contribute code but don't have the time to write tests or documentation, please mention that in the pull request. We'll still be happy with your contribution and we'll write the tests / documentation ourselves!
-      
-#### Thanks in advance,
-#### The BitSensor Team
+- Commit messages follow [Conventional Commits](https://www.conventionalcommits.org) (`feat:`, `fix:`, `refactor:`, `docs:`, `chore:`, `!` / `BREAKING CHANGE:` for breaking changes). Reference issues in the message, e.g. `Closes #42`.
+- `npm run typecheck` and `npm run build` pass.
+- New behaviour and breaking changes are described in [CHANGELOG.md](CHANGELOG.md).
+- New config options are added to the [config schema](src/shared/config/config.schema.ts), [`config/config.json`](config/config.json) when useful, and the configuration section of the [README](README.md#configuration).
+- New or changed endpoints have correct Zod schemas and descriptions, so the Swagger documentation stays accurate.
