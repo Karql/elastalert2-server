@@ -20,6 +20,15 @@ I use and like this project, so I decided to keep developing it:
 - [5.0.0](https://github.com/Karql/elastalert2-server/releases/tag/5.0.0) - [ElastAlert2](https://github.com/jertel/elastalert2), the maintained successor of ElastAlert, migration to TypeScript and Swagger
 - 6.0.0 - [Hono](https://hono.dev) + [Zod](https://zod.dev), Problem Details errors, structured logging (see [CHANGELOG](CHANGELOG.md))
 
+## Versions
+
+| Version | Branch | Status |
+|---|---|---|
+| 6.x | [`master`](https://github.com/Karql/elastalert2-server/tree/master) | Current version, new features and fixes |
+| 5.x | [`v5`](https://github.com/Karql/elastalert2-server/tree/v5) | Security and critical fixes only ([CHANGELOG](https://github.com/Karql/elastalert2-server/blob/v5/CHANGELOG.md)) |
+
+Upgrading from 5.x to 6.x: see the breaking changes of [6.0.0](CHANGELOG.md#600). The most important ones are errors returned as Problem Details, the removed `/metadata`, `/mapping` and `/search` endpoints, the ignored `es_*` options in `config.json`, the new log format and the Docker image without the BitSensor rule templates. Use the [ElastAlert Kibana plugin](https://github.com/karql/elastalert-kibana-plugin) 2.x with 6.x, older versions of the plugin don't show the new error format.
+
 ## Installation
 
 The most convenient way to run the server is the Docker image. Clone the repository to get the example configuration files:
